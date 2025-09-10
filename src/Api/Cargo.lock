@@ -62,11 +62,7 @@ version = "1.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e231f6134f61b71076a3eab506c379d4f36122f2af15a9ff04415ea4c3339e2"
 dependencies = [
-<<<<<<< HEAD
- "windows-sys 0.59.0",
-=======
  "windows-sys 0.60.2",
->>>>>>> 92d611c (chore: change api url and update deps)
 ]
 
 [[package]]
@@ -77,11 +73,7 @@ checksum = "3e0633414522a32ffaac8ac6cc8f748e090c5717661fddeea04219e2344f5f2a"
 dependencies = [
  "anstyle",
  "once_cell_polyfill",
-<<<<<<< HEAD
- "windows-sys 0.59.0",
-=======
  "windows-sys 0.60.2",
->>>>>>> 92d611c (chore: change api url and update deps)
 ]
 
 [[package]]
@@ -246,15 +238,9 @@ checksum = "2fd1289c04a9ea8cb22300a459a72a385d7c73d3259e2ed7dcb2af674838cfa9"
 
 [[package]]
 name = "clap"
-<<<<<<< HEAD
-version = "4.5.46"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c5e4fcf9c21d2e544ca1ee9d8552de13019a42aa7dbf32747fa7aaf1df76e57"
-=======
 version = "4.5.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7eac00902d9d136acd712710d71823fb8ac8004ca445a89e73a41d45aa712931"
->>>>>>> 92d611c (chore: change api url and update deps)
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -262,15 +248,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-<<<<<<< HEAD
-version = "4.5.46"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fecb53a0e6fcfb055f686001bc2e2592fa527efaf38dbe81a6a9563562e57d41"
-=======
 version = "4.5.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2ad9bbf750e73b5884fb8a211a9424a1906c1e156724260fdae972f31d70e1d6"
->>>>>>> 92d611c (chore: change api url and update deps)
 dependencies = [
  "anstream",
  "anstyle",
@@ -280,15 +260,9 @@ dependencies = [
 
 [[package]]
 name = "clap_derive"
-<<<<<<< HEAD
-version = "4.5.45"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14cb31bb0a7d536caef2639baa7fad459e15c3144efefa6dbd1c84562c4739f6"
-=======
 version = "4.5.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbfd7eae0b0f1a6e63d4b13c9c478de77c2eb546fba158ad50b4203dc24b9f9c"
->>>>>>> 92d611c (chore: change api url and update deps)
 dependencies = [
  "heck",
  "proc-macro2",
@@ -787,11 +761,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78bed444cc8a2160f01cbcf811ef18cac863ad68ae8ca62092e8db51d51c761c"
 dependencies = [
  "libc",
-<<<<<<< HEAD
- "wasi 0.11.0+wasi-snapshot-preview1",
-=======
  "wasi 0.11.1+wasi-snapshot-preview1",
->>>>>>> 92d611c (chore: change api url and update deps)
  "windows-sys 0.59.0",
 ]
 
@@ -951,15 +921,9 @@ dependencies = [
 
 [[package]]
 name = "regex-automata"
-<<<<<<< HEAD
-version = "0.4.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "809e8dc61f6de73b46c85f4c96486310fe304c434cfa43669d7b40f711150908"
-=======
 version = "0.4.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6b9458fa0bfeeac22b5ca447c63aaf45f28439a709ccd244698632f9aa6394d6"
->>>>>>> 92d611c (chore: change api url and update deps)
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -968,15 +932,9 @@ dependencies = [
 
 [[package]]
 name = "regex-syntax"
-<<<<<<< HEAD
-version = "0.8.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
-=======
 version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "caf4aa5b0f434c91fe5c7f1ecb6a5ece2130b02ad2a590589dda5146df959001"
->>>>>>> 92d611c (chore: change api url and update deps)
 
 [[package]]
 name = "rmp"
@@ -1387,15 +1345,9 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "uuid"
-<<<<<<< HEAD
-version = "1.18.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f33196643e165781c20a5ead5582283a7dacbb87855d867fbc2df3f81eddc1be"
-=======
 version = "1.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f87b8aa10b915a06587d0dec516c282ff295b475d94abf425d62b57710070a2"
->>>>>>> 92d611c (chore: change api url and update deps)
 dependencies = [
  "getrandom",
  "js-sys",
@@ -1606,11 +1558,7 @@ version = "0.52.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "282be5f36a8ce781fad8c8ae18fa3f9beff57ec1b52cb3de0789201425d9a33d"
 dependencies = [
-<<<<<<< HEAD
- "windows-targets",
-=======
  "windows-targets 0.52.6",
->>>>>>> 92d611c (chore: change api url and update deps)
 ]
 
 [[package]]

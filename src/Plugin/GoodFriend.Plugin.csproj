@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Dalamud.NET.Sdk/13.0.0">
+<Project Sdk="Dalamud.NET.Sdk/13.1.0">
   <!-- Project Information -->
   <PropertyGroup>
     <Title>GoodFriend.Plugin</Title>
@@ -7,7 +7,7 @@
     <AssemblyName>GoodFriend</AssemblyName>
     <Description>Major improvements to the in-game friend system, like getting login and logout
       notifications for your friends, and much more.</Description>
-    <Version>3.7.2.2</Version>
+    <Version>3.7.2.3</Version>
     <PackageProjectUrl>https://github.com/Blooym/Dalamud.GoodFriend</PackageProjectUrl>
   </PropertyGroup>
 

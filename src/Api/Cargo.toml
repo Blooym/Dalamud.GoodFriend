@@ -17,7 +17,7 @@ tower-http = { version = "0.6.6", features = [
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 tokio-stream = { version = "0.1.17", features = ["sync"] }
-serde = { version = "1.0.219", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 sha2 = "0.10.9"
 hex = "0.4.3"
 uuid = { version = "1.18.1", features = ["serde", "v4"] }

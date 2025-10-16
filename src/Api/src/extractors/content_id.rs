@@ -11,7 +11,7 @@ const CONTENT_ID_SALT_HEADER: &str = "x-content-id-salt";
 const CONTENT_ID_HASH_LENGTH: usize = 64;
 const CONTENT_ID_SALT_LENGTH: usize = 32;
 
-static CONTENT_ID_HASH_CACHE: LazyLock<Arc<Cache<String, ()>>> = LazyLock::new(|| {
+static CONTENT_ID_HASH_CACHE: LazyLock<Arc<Cache<Box<str>, ()>>> = LazyLock::new(|| {
     const DEFAULT_CACHE_CAPACITY: u64 = 1000;
     Arc::new(Cache::new(
         std::env::var("GOODFRIEND_CONTENT_ID_CACHE_CAPACITY")
@@ -21,8 +21,8 @@ static CONTENT_ID_HASH_CACHE: LazyLock<Arc<Cache<String, ()>>> = LazyLock::new(|
 });
 
 pub struct UniqueContentId {
-    pub hash: String,
-    pub salt: String,
+    pub hash: Box<str>,
+    pub salt: Box<str>,
 }
 
 #[derive(Debug)]
@@ -41,16 +41,16 @@ where
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         let headers: &HeaderMap = &parts.headers;
-        let content_id_hash = headers
+        let content_id_hash: Box<str> = headers
             .get(CONTENT_ID_HASH_HEADER)
             .and_then(|v| v.to_str().ok())
             .ok_or(ContentIdExtractError::HashMissing)?
-            .to_string();
-        let content_id_salt = headers
+            .into();
+        let content_id_salt: Box<str> = headers
             .get(CONTENT_ID_SALT_HEADER)
             .and_then(|v| v.to_str().ok())
             .ok_or(ContentIdExtractError::SaltMissing)?
-            .to_string();
+            .into();
 
         if content_id_hash.len() < CONTENT_ID_HASH_LENGTH
             || content_id_salt.len() < CONTENT_ID_SALT_LENGTH

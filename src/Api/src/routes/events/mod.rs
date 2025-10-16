@@ -8,8 +8,8 @@ use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct PlayerEventStreamUpdate {
-    pub content_id_hash: String,
-    pub content_id_salt: String,
+    pub content_id_hash: Box<str>,
+    pub content_id_salt: Box<str>,
     pub state_update_type: PlayerStateUpdateType,
 }
 

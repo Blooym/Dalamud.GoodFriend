@@ -8,10 +8,7 @@ use sha2::{Digest, Sha512};
 
 const AUTH_TOKEN_HEADER: &str = "x-auth-token";
 
-pub struct AuthenticatedUser {
-    #[allow(dead_code)]
-    pub token_hash: String,
-}
+pub struct AuthenticatedUser;
 
 #[derive(Debug)]
 pub enum AuthenticationExtractError {
@@ -44,7 +41,7 @@ where
             return Err(AuthenticationExtractError::InvalidAuthToken);
         }
 
-        Ok(AuthenticatedUser { token_hash })
+        Ok(AuthenticatedUser)
     }
 }
 

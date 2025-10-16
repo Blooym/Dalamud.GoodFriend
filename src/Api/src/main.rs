@@ -74,8 +74,8 @@ struct Arguments {
 struct AppState {
     player_events_stream: broadcast::Sender<PlayerEventStreamUpdate>,
     announcement_events_stream: broadcast::Sender<AnnouncementMessage>,
-    authentication_tokens: Vec<String>,
-    client_keys: Option<Vec<String>>,
+    authentication_tokens: Box<[String]>,
+    client_keys: Option<Box<[String]>>,
 }
 
 #[tokio::main]
@@ -93,8 +93,8 @@ async fn main() -> Result<()> {
             args.announce_sse_cap,
         )
         .0,
-        authentication_tokens: args.authentication_tokens,
-        client_keys: args.allowed_client_keys,
+        authentication_tokens: args.authentication_tokens.into(),
+        client_keys: args.allowed_client_keys.map(|c| c.into()),
     };
 
     let tcp_listener = TcpListener::bind(args.address).await?;

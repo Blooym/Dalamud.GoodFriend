@@ -6,7 +6,7 @@ use axum::{
         sse::{Event, KeepAlive},
     },
 };
-use std::convert::Infallible;
+use core::convert::Infallible;
 use tokio_stream::{Stream, StreamExt, wrappers::BroadcastStream};
 
 pub async fn player_events_sse_handler(

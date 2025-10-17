@@ -10,9 +10,9 @@ use tracing::info;
 
 #[derive(Debug, Deserialize)]
 pub struct UpdatePlayerLoginStateRequest {
-    pub world_id: u32,
-    pub territory_id: u16,
     pub logged_in: bool,
+    pub territory_id: u16,
+    pub world_id: u32,
 }
 
 pub async fn send_loginstate_handler(

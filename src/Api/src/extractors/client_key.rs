@@ -8,8 +8,7 @@ use axum::{
 const CLIENT_KEY_HEADER: &str = "X-Client-Key";
 
 // Struct to represent the `ClientKey`
-#[allow(dead_code)]
-pub struct ClientKey(Option<String>);
+pub struct ClientKey;
 
 #[derive(Debug)]
 pub enum ClientKeyExtractError {
@@ -26,21 +25,14 @@ where
 
     async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
         let state = AppState::from_ref(state);
-
-        if state.client_keys.is_none() || state.client_keys.as_ref().unwrap().is_empty() {
-            return Ok(ClientKey(
-                parts
-                    .headers
-                    .get(CLIENT_KEY_HEADER)
-                    .map(|s| s.to_str().unwrap_or_default().trim().to_owned()),
-            ));
-        }
-
+        let Some(client_keys) = state.client_keys else {
+            return Ok(ClientKey);
+        };
         let Some(key) = parts
             .headers
             .get(CLIENT_KEY_HEADER)
             .and_then(|value| value.to_str().ok())
-            .map(|s| s.trim().to_owned())
+            .map(|s| s.trim())
         else {
             return Err(ClientKeyExtractError::MissingKey);
         };
@@ -49,11 +41,11 @@ where
             return Err(ClientKeyExtractError::MissingKey);
         }
 
-        if !state.client_keys.as_ref().unwrap().contains(&key) {
+        if !client_keys.iter().any(|k| k == key) {
             return Err(ClientKeyExtractError::InvalidKey);
         }
 
-        Ok(ClientKey(Some(key)))
+        Ok(ClientKey)
     }
 }
 

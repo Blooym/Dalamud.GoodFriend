@@ -226,7 +226,7 @@ public sealed class SseClient<T> : IDisposable where T : struct
     /// <exception cref="ObjectDisposedException"></exception>
     public async void Connect()
     {
-        ObjectDisposedException.ThrowIf(this.disposedValue, nameof(SseClient<>));
+        ObjectDisposedException.ThrowIf(this.disposedValue, nameof(SseClient<T>));
 
         if (this.ConnectionState is SseConnectionState.Connecting or SseConnectionState.Connected)
         {
@@ -295,7 +295,7 @@ public sealed class SseClient<T> : IDisposable where T : struct
     /// <exception cref="ObjectDisposedException"></exception>
     public void Disconnect()
     {
-        ObjectDisposedException.ThrowIf(this.disposedValue, nameof(SseClient<>));
+        ObjectDisposedException.ThrowIf(this.disposedValue, nameof(SseClient<T>));
         if (this.ConnectionState is SseConnectionState.Disconnecting or SseConnectionState.Disconnected)
         {
             return;

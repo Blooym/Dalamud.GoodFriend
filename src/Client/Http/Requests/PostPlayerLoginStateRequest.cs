@@ -27,6 +27,8 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
 
     public readonly record struct RequestData
     {
+        private readonly string contentIdHashBackingField;
+
         /// <summary>
         ///     The hash of the player's ContentId.
         /// </summary>
@@ -36,15 +38,17 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         /// </remarks>
         public required string ContentIdHash
         {
-            get; init
+            get => this.contentIdHashBackingField; init
             {
                 if (value.Length < GlobalRequestData.Validation.ContentIdHashMinLength)
                 {
                     throw new ArgumentException("ContentIdHash must be at least 64 characters in length");
                 }
-                field = value;
+                this.contentIdHashBackingField = value;
             }
         }
+
+        private readonly string contentIdSaltBackingField;
 
         /// <summary>
         ///     The salt used when hashing the player's ContentId.
@@ -54,13 +58,13 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         /// </remarks>
         public required string ContentIdSalt
         {
-            get; init
+            get => this.contentIdSaltBackingField; init
             {
                 if (value.Length < GlobalRequestData.Validation.ContentIdSaltMinLength)
                 {
                     throw new ArgumentException("ContentIdSalt must be at least 32 characters in length");
                 }
-                field = value;
+                this.contentIdSaltBackingField = value;
             }
         }
 

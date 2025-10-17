@@ -2,9 +2,9 @@ name: "Release"
 run-name: "Release API for ${{ github.sha }}"
 on:
   push:
-    branches: 
+    branches:
       - main
-    paths: 
+    paths:
       - "src/Api/**"
   workflow_dispatch:
 
@@ -64,6 +64,6 @@ jobs:
         uses: vlaurin/action-ghcr-prune@0cf7d39f88546edd31965acba78cdcb0be14d641
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          container: goodfriend
+          container: dalamud.goodfriend
           keep-younger-than: 7
           prune-untagged: true

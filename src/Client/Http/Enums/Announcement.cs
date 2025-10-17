@@ -10,13 +10,3 @@ public enum AnnouncementKind
     Critical,
     Miscellaneous,
 }
-
-/// <summary>
-///     The cause/reason for the announcement.
-/// </summary>
-public enum AnnouncementCause
-{
-    Manual,
-    Automatic,
-    Scheduled,
-}

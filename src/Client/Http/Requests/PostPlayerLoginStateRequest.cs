@@ -18,17 +18,15 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
     internal readonly struct RequestBody
     {
         [Key(0)]
-        public required uint WorldId { get; init; }
+        public required bool LoggedIn { get; init; }
         [Key(1)]
         public required ushort TerritoryId { get; init; }
         [Key(2)]
-        public required bool LoggedIn { get; init; }
+        public required uint WorldId { get; init; }
     }
 
     public readonly record struct RequestData
     {
-        private readonly string contentIdHashBackingField;
-
         /// <summary>
         ///     The hash of the player's ContentId.
         /// </summary>
@@ -38,17 +36,15 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         /// </remarks>
         public required string ContentIdHash
         {
-            get => this.contentIdHashBackingField; init
+            get; init
             {
                 if (value.Length < GlobalRequestData.Validation.ContentIdHashMinLength)
                 {
                     throw new ArgumentException("ContentIdHash must be at least 64 characters in length");
                 }
-                this.contentIdHashBackingField = value;
+                field = value;
             }
         }
-
-        private readonly string contentIdSaltBackingField;
 
         /// <summary>
         ///     The salt used when hashing the player's ContentId.
@@ -58,20 +54,20 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         /// </remarks>
         public required string ContentIdSalt
         {
-            get => this.contentIdSaltBackingField; init
+            get; init
             {
                 if (value.Length < GlobalRequestData.Validation.ContentIdSaltMinLength)
                 {
                     throw new ArgumentException("ContentIdSalt must be at least 32 characters in length");
                 }
-                this.contentIdSaltBackingField = value;
+                field = value;
             }
         }
 
         /// <summary>
-        ///     The ID player's current World.
+        ///     Whether the player is now logged in.
         /// </summary>
-        public required uint WorldId { get; init; }
+        public required bool LoggedIn { get; init; }
 
         /// <summary>
         ///     The ID of the player's current Territory.
@@ -79,9 +75,9 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         public required ushort TerritoryId { get; init; }
 
         /// <summary>
-        ///     Whether the player is now logged in.
+        ///     The ID player's current World.
         /// </summary>
-        public required bool LoggedIn { get; init; }
+        public required uint WorldId { get; init; }
     }
 
     /// <summary>
@@ -123,6 +119,4 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         var message = BuildMessage(requestData);
         return httpClient.SendAsync(message);
     }
-
-
 }

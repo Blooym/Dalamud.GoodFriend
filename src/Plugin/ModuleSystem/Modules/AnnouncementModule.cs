@@ -202,7 +202,6 @@ internal sealed class AnnouncementModule : BaseModule
                     AuthenticationToken = Services.PluginConfiguration.ApiConfig.AuthKey,
                     Kind = this.sendAnnouncementKind,
                     Message = this.sendAnnouncementText,
-                    Cause = AnnouncementCause.Manual,
                     Channel = string.IsNullOrWhiteSpace(this.sendAnnouncementChannel) ? null : this.sendAnnouncementChannel,
                 });
                 if (outcome.IsSuccessStatusCode)

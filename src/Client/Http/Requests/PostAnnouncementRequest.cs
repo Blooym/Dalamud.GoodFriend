@@ -23,25 +23,19 @@ public sealed class PostAnnouncementRequest : IHttpRequestHandler<PostAnnounceme
         /// <summary>
         ///     The message to send.
         /// </summary>
-        [Key(1)]
+        [Key(0)]
         public required string Message { get; init; }
 
         /// <summary>
         ///     The kind of announcement to send.
         /// </summary>
-        [Key(2)]
+        [Key(1)]
         public required AnnouncementKind Kind { get; init; }
-
-        /// <summary>
-        ///     The cause of the announcement.
-        /// </summary>
-        [Key(3)]
-        public required AnnouncementCause Cause { get; init; }
 
         /// <summary>
         ///     The channel for the announcement.
         /// </summary>
-        [Key(4)]
+        [Key(2)]
         public string? Channel { get; init; }
     }
 

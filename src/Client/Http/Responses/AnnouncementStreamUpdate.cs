@@ -9,12 +9,6 @@ namespace GoodFriend.Client.Http.Responses;
 public record struct AnnouncementStreamUpdate
 {
     /// <summary>
-    ///     The UUID of the announcement.
-    /// </summary>
-    [JsonPropertyName("id")]
-    public string Id { get; set; }
-
-    /// <summary>
     ///     The message of the announcement.
     /// </summary>
     [JsonPropertyName("message")]
@@ -25,12 +19,6 @@ public record struct AnnouncementStreamUpdate
     /// </summary>
     [JsonPropertyName("kind"), JsonConverter(typeof(JsonStringEnumConverter))]
     public AnnouncementKind Kind { get; set; }
-
-    /// <summary>
-    ///     The reason for the announcement.
-    /// </summary>
-    [JsonPropertyName("cause"), JsonConverter(typeof(JsonStringEnumConverter))]
-    public AnnouncementCause Cause { get; set; }
 
     /// <summary>
     ///     The channel of the announcement.

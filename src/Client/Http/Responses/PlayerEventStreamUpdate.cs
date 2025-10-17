@@ -44,10 +44,10 @@ public record struct StateUpdateType
 public record struct LoginStateChangeData
 {
     /// <summary>
-    ///     The ID of the world the event occured in.
+    ///     Whether the event is a login or logout.
     /// </summary>
-    [JsonPropertyName("world_id")]
-    public uint WorldId { get; set; }
+    [JsonPropertyName("logged_in")]
+    public bool LoggedIn { get; set; }
 
     /// <summary>
     ///     The ID of the territory the event occured in.
@@ -56,8 +56,8 @@ public record struct LoginStateChangeData
     public ushort TerritoryId { get; set; }
 
     /// <summary>
-    ///     Whether the event is a login or logout.
+    ///     The ID of the world the event occured in.
     /// </summary>
-    [JsonPropertyName("logged_in")]
-    public bool LoggedIn { get; set; }
+    [JsonPropertyName("world_id")]
+    public uint WorldId { get; set; }
 }

@@ -10,14 +10,13 @@ use axum::{
     routing::{get, post},
 };
 use clap::Parser;
+use core::net::SocketAddr;
 use dotenvy::dotenv;
 use routes::{
-    AnnouncementMessage, PlayerEventStreamUpdate, announcement_event_sse_handler,
-    connection_count_handler, health_handler, player_events_sse_handler, post_announcement,
-    send_loginstate_handler, validate_auth_handler,
+    AnnouncementMessage, PlayerEventStreamUpdate, announcement_event_sse_handler, health_handler,
+    player_events_sse_handler, post_announcement, send_loginstate_handler, validate_auth_handler,
 };
-use std::net::SocketAddr;
-use tokio::{net::TcpListener, sync::broadcast};
+use tokio::{net::TcpListener, signal, sync::broadcast};
 use tower_http::{
     catch_panic::CatchPanicLayer,
     normalize_path::NormalizePathLayer,
@@ -53,14 +52,6 @@ struct Arguments {
     )]
     pub allowed_client_keys: Option<Vec<String>>,
 
-    /// The capacity of the 'player events' SSE stream. This should be kept close to `announce-sse-cap`.
-    #[arg(
-        long = "api-player-sse-cap",
-        env = "GOODFRIEND_API_PLAYERSSE_CAP",
-        default_value_t = 10000
-    )]
-    pub player_sse_cap: usize,
-
     /// The capacity of the 'announcements' SSE stream. This should be kept close to `player_sse_cap-sse-cap`.
     #[arg(
         long = "api-announce-sse-cap",
@@ -68,6 +59,14 @@ struct Arguments {
         default_value_t = 10000
     )]
     pub announce_sse_cap: usize,
+
+    /// The capacity of the 'player events' SSE stream. This should be kept close to `announce-sse-cap`.
+    #[arg(
+        long = "api-player-sse-cap",
+        env = "GOODFRIEND_API_PLAYERSSE_CAP",
+        default_value_t = 10000
+    )]
+    pub player_sse_cap: usize,
 }
 
 #[derive(Clone)]
@@ -94,13 +93,12 @@ async fn main() -> Result<()> {
         )
         .0,
         authentication_tokens: args.authentication_tokens.into(),
-        client_keys: args.allowed_client_keys.map(|c| c.into()),
+        client_keys: args.allowed_client_keys.map(core::convert::Into::into),
     };
 
     let tcp_listener = TcpListener::bind(args.address).await?;
     let router = Router::new()
         .route("/api/health", get(health_handler))
-        .route("/api/connections", get(connection_count_handler))
         .route("/api/auth/validate", post(validate_auth_handler))
         .route("/api/announcements/send", post(post_announcement))
         .route(
@@ -140,6 +138,33 @@ async fn main() -> Result<()> {
          * Listening on: http://{}",
         args.address,
     );
-    axum::serve(tcp_listener, router).await?;
+    axum::serve(tcp_listener, router)
+        .with_graceful_shutdown(shutdown_signal())
+        .await?;
     Ok(())
+}
+
+// https://github.com/tokio-rs/axum/blob/15917c6dbcb4a48707a20e9cfd021992a279a662/examples/graceful-shutdown/src/main.rs#L55
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
 }

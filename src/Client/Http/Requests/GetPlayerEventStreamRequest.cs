@@ -17,5 +17,4 @@ public static class GetPlayerEventStreamRequest
     /// <param name="settings">The settings for this client.</param>
     /// <returns></returns>
     public static SseClient<PlayerEventStreamUpdate> CreateSseClient(HttpClient httpClient, SseClientSettings settings) => new(httpClient, EndpointUrl, settings);
-
 }

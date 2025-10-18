@@ -24,7 +24,6 @@ internal static class Services
     private static readonly TimeSpan SseReconnectDelayMax = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan SseReconnectDelayIncrement = TimeSpan.FromSeconds(30);
     public static SseClient<PlayerEventStreamUpdate> PlayerEventSseStream { get; private set; } = null!;
-    public static SseClient<AnnouncementStreamUpdate> AnnouncementSseStream { get; private set; } = null!;
 
     private static WindowingService WindowingService { get; set; } = null!;
     private static LocalizationManager LocalizationService { get; set; } = null!;
@@ -49,12 +48,6 @@ internal static class Services
             ReconnectDelayMax = SseReconnectDelayMax,
             ReconnectDelayIncrement = SseReconnectDelayIncrement
         });
-        AnnouncementSseStream = GetAnnouncementStreamRequest.CreateSseClient(CreateHttpClient(HappyEyeballsCallback), new()
-        {
-            ReconnectDelayMin = SseReconnectDelayMin,
-            ReconnectDelayMax = SseReconnectDelayMax,
-            ReconnectDelayIncrement = SseReconnectDelayIncrement
-        });
         WorldSheet = DalamudInjections.DataManager.GetExcelSheet<World>();
         ModuleService = new ModuleService();
         WindowingService = new WindowingService();
@@ -67,7 +60,6 @@ internal static class Services
         ModuleService.Dispose();
         HttpClient.Dispose();
         PlayerEventSseStream.Dispose();
-        AnnouncementSseStream.Dispose();
         HappyEyeballsCallback.Dispose();
     }
 
@@ -87,7 +79,6 @@ internal static class Services
         DefaultRequestHeaders =
             {
                 { "User-Agent", HttpConstants.UserAgent },
-                { GlobalRequestData.Headers.ClientKey, Constants.Build.ClientKey ?? "GOODFRIEND_FALLBACK_KEY" }
             },
         DefaultRequestVersion = HttpVersion.Version20,
         DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,

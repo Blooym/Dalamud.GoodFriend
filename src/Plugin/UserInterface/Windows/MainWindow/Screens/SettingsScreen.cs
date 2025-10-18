@@ -102,20 +102,6 @@ internal static class SettingsScreen
             Services.PluginConfiguration.Save();
         }
         SiGui.TextDisabledWrapped(Strings.UI_MainWindow_SettingsScreen_Setting_APIURL_Description);
-        ImGui.Dummy(Spacing.ReadableSpacing);
-
-        var authKey = Services.PluginConfiguration.ApiConfig.AuthKey;
-        SiGui.Text(Strings.UI_MainWindow_SettingsScreen_Api_AuthToken);
-        if (SiGui.InputText("##authToken", ref authKey, 250, false, ImGuiInputTextFlags.Password))
-        {
-            if (authKey != Services.PluginConfiguration.ApiConfig.AuthKey)
-            {
-                restartRequired = true;
-                Services.PluginConfiguration.ApiConfig.AuthKey = authKey;
-                Services.PluginConfiguration.Save();
-            }
-        }
-        SiGui.TextDisabledWrapped(Strings.UI_MainWindow_SettingsScreen_Api_AuthToken_Description);
     }
 
     private enum SettingsOption

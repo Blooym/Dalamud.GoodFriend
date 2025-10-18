@@ -10,8 +10,6 @@ namespace GoodFriend.Plugin.Configuration;
 /// </summary>
 internal sealed class PluginConfiguration : IPluginConfiguration
 {
-
-
     /// <summary>
     ///     The current configuration version, incremented on breaking changes.
     /// </summary>
@@ -36,11 +34,6 @@ internal sealed class PluginConfiguration : IPluginConfiguration
         ///     The Base URL to use when interacting with the API.
         /// </summary>
         public Uri BaseUrl { get; set; } = DefaultBaseUri;
-
-        /// <summary>
-        ///     The authentication key to use with authenticated requests.
-        /// </summary>
-        public string AuthKey { get; set; } = string.Empty;
 
         /// <summary>
         ///     An optional additional key used when hashing any identifable value to ensure they can only be read by others in the same group.

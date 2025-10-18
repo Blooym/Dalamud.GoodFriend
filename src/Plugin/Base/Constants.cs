@@ -1,6 +1,3 @@
-using System;
-using System.Reflection;
-
 namespace GoodFriend.Plugin.Base;
 
 /// <summary>
@@ -9,17 +6,6 @@ namespace GoodFriend.Plugin.Base;
 internal static class Constants
 {
     public const uint WaitingForFriendListApprovalStatus = 0x20;
-
-    /// <summary>
-    ///     Plugin build information.
-    /// </summary>
-    internal static class Build
-    {
-        /// <summary>
-        ///     The client key used for this plugin.
-        /// </summary>
-        public static readonly string? ClientKey = Assembly.GetExecutingAssembly().GetCustomAttribute<ClientKeyAttribute>()?.Value;
-    }
 
     /// <summary>
     ///     Links to various places.
@@ -42,13 +28,4 @@ internal static class Constants
         /// </summary>
         public static readonly string ModuleConfig = @$"{DalamudInjections.PluginInterface.ConfigDirectory}\ModuleConfig\";
     }
-}
-
-/// <summary>
-///     The client key used for this plugin.
-/// </summary>
-[AttributeUsage(AttributeTargets.Assembly)]
-internal sealed class ClientKeyAttribute(string value) : Attribute
-{
-    public string Value { get; set; } = value;
 }

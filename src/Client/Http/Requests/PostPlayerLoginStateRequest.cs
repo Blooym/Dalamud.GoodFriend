@@ -18,11 +18,16 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
     internal readonly struct RequestBody
     {
         [Key(0)]
-        public required bool LoggedIn { get; init; }
+        public required string ContentIdHash { get; init; }
         [Key(1)]
-        public required ushort TerritoryId { get; init; }
+        public required string ContentIdSalt { get; init; }
         [Key(2)]
+        public required bool LoggedIn { get; init; }
+        [Key(3)]
+        public required ushort TerritoryId { get; init; }
+        [Key(4)]
         public required uint WorldId { get; init; }
+
     }
 
     public readonly record struct RequestData
@@ -96,17 +101,13 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
             LoggedIn = requestData.LoggedIn,
             TerritoryId = requestData.TerritoryId,
             WorldId = requestData.WorldId,
+            ContentIdHash = requestData.ContentIdHash,
+            ContentIdSalt = requestData.ContentIdSalt
         }))
         {
             Headers = {
                 ContentType = new MediaTypeHeaderValue("application/x-msgpack")
             }
-        },
-        Headers =
-        {
-            { GlobalRequestData.Headers.ContentIdHash, requestData.ContentIdHash },
-            { GlobalRequestData.Headers.ContentIdSalt, requestData.ContentIdSalt
-},
         },
     };
 

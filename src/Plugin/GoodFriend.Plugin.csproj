@@ -7,7 +7,7 @@
     <AssemblyName>GoodFriend</AssemblyName>
     <Description>Major improvements to the in-game friend system, like getting login and logout
       notifications for your friends, and much more.</Description>
-    <Version>3.8.0.0</Version>
+    <Version>3.9.0.0</Version>
     <PackageProjectUrl>https://github.com/Blooym/Dalamud.GoodFriend</PackageProjectUrl>
   </PropertyGroup>
 
@@ -17,19 +17,6 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
-
-  <!-- Custom Runtime Variables -->
-  <Target Name="SetCustomVars" BeforeTargets="BeforeBuild">
-    <ItemGroup>
-      <AssemblyAttribute Include="GoodFriend.Plugin.Base.ClientKey">
-        <_Parameter1>$(PLOGON_SECRET_CLIENT_KEY)</_Parameter1>
-      </AssemblyAttribute>
-    </ItemGroup>
-  </Target>
-  <Target Name="EnsureClientKeySet" BeforeTargets="PrepareForBuild"
-    Condition="'$(PLOGON_SECRET_CLIENT_KEY)' == '' And '$(Configuration)' != 'Debug'">
-    <Error Text="Cannot build in release without PLOGON_SECRET_CLIENT_KEY set in environment." />
-  </Target>
 
   <!-- Localization -->
   <ItemGroup>

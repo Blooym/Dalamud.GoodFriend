@@ -26,7 +26,6 @@ COPY src ./src
 ARG RUSTC_APP_FLAGS=--release --bin
 RUN cargo build ${RUSTC_APP_FLAGS}
 
-
 # -----------
 #   RUNTIME
 # -----------

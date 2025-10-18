@@ -15,11 +15,6 @@ public sealed class GoodFriendPlugin : IDalamudPlugin
         SirenCore.Initialize(pluginInterface, pluginInterface.InternalName);
         pluginInterface.Create<DalamudInjections>();
         Services.Initialize();
-
-        if (string.IsNullOrEmpty(Constants.Build.ClientKey))
-        {
-            Logger.Warning("No client key has been set for this build, this is likely to cause issues when connecting to instances that require them.");
-        }
     }
 
     /// <inheritdoc />

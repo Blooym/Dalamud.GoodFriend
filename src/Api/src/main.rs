@@ -1,4 +1,3 @@
-mod extractors;
 mod routes;
 
 use anyhow::Result;
@@ -13,8 +12,7 @@ use clap::Parser;
 use core::net::SocketAddr;
 use dotenvy::dotenv;
 use routes::{
-    AnnouncementMessage, PlayerEventStreamUpdate, announcement_event_sse_handler, health_handler,
-    player_events_sse_handler, post_announcement, send_loginstate_handler, validate_auth_handler,
+    PlayerEventStreamUpdate, health_handler, player_events_sse_handler, send_loginstate_handler,
 };
 use tokio::{net::TcpListener, signal, sync::broadcast};
 use tower_http::{
@@ -26,7 +24,7 @@ use tracing::{Level, info};
 use tracing_subscriber::EnvFilter;
 
 #[derive(Debug, Clone, Parser)]
-#[clap(author, about, version)]
+#[clap(author, about, long_about, version)]
 struct Arguments {
     /// Internet socket address that the server should be ran on.
     #[arg(
@@ -36,45 +34,18 @@ struct Arguments {
     )]
     address: SocketAddr,
 
-    /// Authentication tokens for use with authenticated endpoints.
+    /// The total capacity of the events SSE stream.
     #[arg(
-        long = "api-auth-tokens",
-        env = "GOODFRIEND_API_AUTH_TOKENS",
-        value_delimiter = ','
-    )]
-    pub authentication_tokens: Vec<String>,
-
-    /// Client keys to use to restrict API usage to allowed clients only.
-    #[arg(
-        long = "api-client-keys",
-        env = "GOODFRIEND_API_CLIENT_KEYS",
-        value_delimiter = ','
-    )]
-    pub allowed_client_keys: Option<Vec<String>>,
-
-    /// The capacity of the 'announcements' SSE stream. This should be kept close to `player_sse_cap-sse-cap`.
-    #[arg(
-        long = "api-announce-sse-cap",
-        env = "GOODFRIEND_API_ANNOUNCESSE_CAP",
+        long = "api-sse-capacity",
+        env = "GOODFRIEND_API_SSE_CAPACITY",
         default_value_t = 10000
     )]
-    pub announce_sse_cap: usize,
-
-    /// The capacity of the 'player events' SSE stream. This should be kept close to `announce-sse-cap`.
-    #[arg(
-        long = "api-player-sse-cap",
-        env = "GOODFRIEND_API_PLAYERSSE_CAP",
-        default_value_t = 10000
-    )]
-    pub player_sse_cap: usize,
+    pub sse_capacity: usize,
 }
 
 #[derive(Clone)]
 struct AppState {
-    player_events_stream: broadcast::Sender<PlayerEventStreamUpdate>,
-    announcement_events_stream: broadcast::Sender<AnnouncementMessage>,
-    authentication_tokens: Box<[String]>,
-    client_keys: Option<Box<[String]>>,
+    events_broadcast_channel: broadcast::Sender<PlayerEventStreamUpdate>,
 }
 
 #[tokio::main]
@@ -87,24 +58,12 @@ async fn main() -> Result<()> {
 
     // Start server.
     let app_state = AppState {
-        player_events_stream: broadcast::channel::<PlayerEventStreamUpdate>(args.player_sse_cap).0,
-        announcement_events_stream: broadcast::channel::<AnnouncementMessage>(
-            args.announce_sse_cap,
-        )
-        .0,
-        authentication_tokens: args.authentication_tokens.into(),
-        client_keys: args.allowed_client_keys.map(core::convert::Into::into),
+        events_broadcast_channel: broadcast::channel::<PlayerEventStreamUpdate>(args.sse_capacity)
+            .0,
     };
-
     let tcp_listener = TcpListener::bind(args.address).await?;
     let router = Router::new()
         .route("/api/health", get(health_handler))
-        .route("/api/auth/validate", post(validate_auth_handler))
-        .route("/api/announcements/send", post(post_announcement))
-        .route(
-            "/api/announcements/stream",
-            get(announcement_event_sse_handler),
-        )
         .route(
             "/api/playerevents/loginstate",
             post(send_loginstate_handler),

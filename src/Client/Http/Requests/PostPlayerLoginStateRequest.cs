@@ -106,7 +106,7 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         }))
         {
             Headers = {
-                ContentType = new MediaTypeHeaderValue("application/x-msgpack")
+                ContentType = new MediaTypeHeaderValue("application/msgpack")
             }
         },
     };

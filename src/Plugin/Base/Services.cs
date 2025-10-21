@@ -23,7 +23,7 @@ internal static class Services
     private static readonly TimeSpan SseReconnectDelayMin = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan SseReconnectDelayMax = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan SseReconnectDelayIncrement = TimeSpan.FromSeconds(30);
-    public static SseClient<PlayerEventStreamUpdate> PlayerEventSseStream { get; private set; } = null!;
+    public static StreamClient<PlayerEventStreamUpdate> PlayerEventSseStream { get; private set; } = null!;
 
     private static WindowingService WindowingService { get; set; } = null!;
     private static LocalizationManager LocalizationService { get; set; } = null!;

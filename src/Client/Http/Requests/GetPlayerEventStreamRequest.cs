@@ -16,5 +16,5 @@ public static class GetPlayerEventStreamRequest
     /// <param name="httpClient">The HTTP client to use for requests. This must be a unique client as it will be managed once initialized.</param>
     /// <param name="settings">The settings for this client.</param>
     /// <returns></returns>
-    public static SseClient<PlayerEventStreamUpdate> CreateSseClient(HttpClient httpClient, SseClientSettings settings) => new(httpClient, EndpointUrl, settings);
+    public static StreamClient<PlayerEventStreamUpdate> CreateSseClient(HttpClient httpClient, StreamClientSettings settings) => new(httpClient, EndpointUrl, settings);
 }

@@ -1,13 +1,11 @@
 using System;
-using System.IO;
 using System.Net.Http;
-using System.Text.Json;
 using System.Timers;
-using System.Web;
+using MessagePack;
 
 namespace GoodFriend.Client.Http;
 
-public enum SseConnectionState
+public enum StreamClientConnectionState
 {
     /// <summary>
     ///     The client is currently connected to the stream.
@@ -35,7 +33,7 @@ public enum SseConnectionState
     Exception,
 }
 
-public readonly struct SseClientSettings
+public readonly struct StreamClientSettings
 {
     /// <summary>
     ///     The minimum amount of time to wait between reconnection attempts
@@ -54,16 +52,11 @@ public readonly struct SseClientSettings
 }
 
 /// <summary>
-///     Represents a client for a server-sent event stream.
+///     Represents a client for a GoodFriend event stream.
 /// </summary>
 /// <typeparam name="T">The type of data to expect from the stream.</typeparam>
-public sealed class SseClient<T> : IDisposable where T : struct
+public sealed class StreamClient<T> : IDisposable where T : struct
 {
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
-    {
-        IncludeFields = true,
-    };
-
     private bool disposedValue;
 
     /// <summary>
@@ -84,45 +77,45 @@ public sealed class SseClient<T> : IDisposable where T : struct
     /// <summary>
     ///     The settings for this client.
     /// </summary>
-    private readonly SseClientSettings settings;
+    private readonly StreamClientSettings settings;
 
     /// <summary>
     ///     The current connection state.
     /// </summary>
-    public SseConnectionState ConnectionState { get; private set; } = SseConnectionState.Disconnected;
+    public StreamClientConnectionState ConnectionState { get; private set; } = StreamClientConnectionState.Disconnected;
 
     /// <summary>
     ///     Fires when the stream is connected.
     /// </summary>
-    public event Action<SseClient<T>>? OnStreamConnected;
+    public event Action<StreamClient<T>>? OnStreamConnected;
 
     /// <summary>
     ///     Fires when the stream is disconnected.
     /// </summary>
-    public event Action<SseClient<T>>? OnStreamDisconnected;
+    public event Action<StreamClient<T>>? OnStreamDisconnected;
 
     /// <summary>
     ///     Fires when the stream sends a heartbeat.
     /// </summary>
-    public event Action<SseClient<T>>? OnStreamHeartbeat;
+    public event Action<StreamClient<T>>? OnStreamHeartbeat;
 
     /// <summary>
     ///     Fires when the stream throws an exception.
     /// </summary>
-    public event Action<SseClient<T>, Exception>? OnStreamException;
+    public event Action<StreamClient<T>, Exception>? OnStreamException;
 
     /// <summary>
     ///     Fires when the stream sends a message.
     /// </summary>
-    public event Action<SseClient<T>, T>? OnStreamMessage;
+    public event Action<StreamClient<T>, T>? OnStreamMessage;
 
     /// <summary>
-    ///     Creates a new SSE client.
+    ///     Creates a new StreamClient client.
     /// </summary>
     /// <param name="httpClient">The HTTP client to use for requests. This must be a unique client as it will be managed once initialized.</param>
     /// <param name="url">The url to connect to.</param>
     /// <param name="settings">The settings for this client.</param>
-    public SseClient(HttpClient httpClient, string url, SseClientSettings settings)
+    public StreamClient(HttpClient httpClient, string url, StreamClientSettings settings)
     {
         this.httpClient = httpClient;
         this.url = url;
@@ -177,7 +170,7 @@ public sealed class SseClient<T> : IDisposable where T : struct
     private void HandleReconnectTimerElapse(object? sender, ElapsedEventArgs e)
     {
         // Already reconnected, reset and stop the timer.
-        if (this.ConnectionState is not SseConnectionState.Exception)
+        if (this.ConnectionState is not StreamClientConnectionState.Exception)
         {
             this.reconnectTimer.Interval = this.settings.ReconnectDelayMin.TotalMilliseconds;
             this.reconnectTimer.Stop();
@@ -226,48 +219,37 @@ public sealed class SseClient<T> : IDisposable where T : struct
     /// <exception cref="ObjectDisposedException"></exception>
     public async void Connect()
     {
-        ObjectDisposedException.ThrowIf(this.disposedValue, nameof(SseClient<T>));
-
-        if (this.ConnectionState is SseConnectionState.Connecting or SseConnectionState.Connected)
+        ObjectDisposedException.ThrowIf(this.disposedValue, nameof(StreamClient<T>));
+        if (this.ConnectionState is StreamClientConnectionState.Connecting or StreamClientConnectionState.Connected)
         {
             return;
         }
 
         try
         {
-            this.ConnectionState = SseConnectionState.Connecting;
-
+            this.ConnectionState = StreamClientConnectionState.Connecting;
             await using var stream = await this.httpClient.GetStreamAsync(this.url);
-            using var reader = new StreamReader(stream);
+            var reader = new MessagePackStreamReader(stream);
             Exception? exception = null;
-
-            this.ConnectionState = SseConnectionState.Connected;
+            this.ConnectionState = StreamClientConnectionState.Connected;
             this.OnStreamConnected?.Invoke(this);
 
-            while (!reader.EndOfStream && this.ConnectionState == SseConnectionState.Connected)
+            while (this.ConnectionState == StreamClientConnectionState.Connected)
             {
-                var message = await reader.ReadLineAsync();
-                message = HttpUtility.UrlDecode(message);
-
-                if (message is null || message.Trim() == ":")
-                {
-                    this.OnStreamHeartbeat?.Invoke(this);
-                    continue;
-                }
-
-                message = message.Replace("data:", "").Trim();
-                if (string.IsNullOrEmpty(message))
-                {
-                    continue;
-                }
-
                 try
                 {
-                    var data = JsonSerializer.Deserialize<T>(message, JsonSerializerOptions);
+                    var message = await reader.ReadAsync(default);
+                    if (message == null)
+                    {
+                        break;
+                    }
+                    var data = MessagePackSerializer.Deserialize<T>(message.Value);
                     this.OnStreamMessage?.Invoke(this, data);
                 }
-                catch (JsonException)
+                catch (MessagePackSerializationException)
                 {
+                    // Failed to deserialize, skip this message
+                    continue;
                 }
                 catch (Exception e)
                 {
@@ -276,15 +258,15 @@ public sealed class SseClient<T> : IDisposable where T : struct
                 }
             }
 
-            if (reader.EndOfStream && this.ConnectionState == SseConnectionState.Connected)
+            if (this.ConnectionState == StreamClientConnectionState.Connected)
             {
-                this.ConnectionState = SseConnectionState.Exception;
+                this.ConnectionState = StreamClientConnectionState.Exception;
                 this.OnStreamException?.Invoke(this, exception ?? new HttpRequestException("Connection to stream suddenly closed."));
             }
         }
         catch (Exception e)
         {
-            this.ConnectionState = SseConnectionState.Exception;
+            this.ConnectionState = StreamClientConnectionState.Exception;
             this.OnStreamException?.Invoke(this, e);
         }
     }
@@ -295,14 +277,14 @@ public sealed class SseClient<T> : IDisposable where T : struct
     /// <exception cref="ObjectDisposedException"></exception>
     public void Disconnect()
     {
-        ObjectDisposedException.ThrowIf(this.disposedValue, nameof(SseClient<T>));
-        if (this.ConnectionState is SseConnectionState.Disconnecting or SseConnectionState.Disconnected)
+        ObjectDisposedException.ThrowIf(this.disposedValue, nameof(StreamClient<T>));
+        if (this.ConnectionState is StreamClientConnectionState.Disconnecting or StreamClientConnectionState.Disconnected)
         {
             return;
         }
-        this.ConnectionState = SseConnectionState.Disconnecting;
+        this.ConnectionState = StreamClientConnectionState.Disconnecting;
         this.httpClient.CancelPendingRequests();
-        this.ConnectionState = SseConnectionState.Disconnected;
+        this.ConnectionState = StreamClientConnectionState.Disconnected;
         this.OnStreamDisconnected?.Invoke(this);
     }
 }

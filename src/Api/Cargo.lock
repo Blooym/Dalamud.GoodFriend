@@ -339,6 +339,7 @@ dependencies = [
  "clap",
  "dotenvy",
  "hex",
+ "rmp-serde",
  "serde",
  "sha2",
  "tokio",

@@ -92,11 +92,7 @@ async fn main() -> Result<()> {
             },
         ));
 
-    info!(
-        "Internal server started\n\
-         * Listening on: http://{}",
-        args.address,
-    );
+    info!("Internal server started at http://{}", args.address);
     axum::serve(tcp_listener, router)
         .with_graceful_shutdown(shutdown_signal())
         .await?;

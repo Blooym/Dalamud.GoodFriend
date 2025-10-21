@@ -1,8 +1,7 @@
-use super::{PlayerEventStreamUpdate, PlayerStateUpdateType};
 use crate::AppState;
 use axum::{extract::State, http::StatusCode};
 use axum_msgpack::MsgPack;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tracing::info;
 
 const CONTENT_ID_HASH_LENGTH: usize = 64;
@@ -17,7 +16,16 @@ pub struct UpdatePlayerLoginStateRequest {
     pub world_id: u32,
 }
 
-pub async fn send_loginstate_handler(
+#[derive(Debug, Clone, Serialize)]
+pub struct PlayerEventStreamUpdate {
+    pub content_id_hash: Box<str>,
+    pub content_id_salt: Box<str>,
+    pub logged_in: bool,
+    pub territory_id: u16,
+    pub world_id: u32,
+}
+
+pub async fn send_event_handler(
     State(state): State<AppState>,
     MsgPack(update): MsgPack<UpdatePlayerLoginStateRequest>,
 ) -> StatusCode {
@@ -32,11 +40,9 @@ pub async fn send_loginstate_handler(
         .send(PlayerEventStreamUpdate {
             content_id_hash: update.content_id_hash,
             content_id_salt: update.content_id_salt,
-            state_update_type: PlayerStateUpdateType::LoginStateChange {
-                world_id: update.world_id,
-                territory_id: update.territory_id,
-                logged_in: update.logged_in,
-            },
+            world_id: update.world_id,
+            territory_id: update.territory_id,
+            logged_in: update.logged_in,
         });
     info!(
         "Sent event to {} subscribers",

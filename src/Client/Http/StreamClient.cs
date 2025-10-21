@@ -248,7 +248,6 @@ public sealed class StreamClient<T> : IDisposable where T : struct
                 }
                 catch (MessagePackSerializationException)
                 {
-                    // Failed to deserialize, skip this message
                     continue;
                 }
                 catch (Exception e)

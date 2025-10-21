@@ -1,5 +1,7 @@
-mod core;
-mod events;
+mod event;
+mod health;
+mod stream;
 
-pub use core::*;
-pub use events::*;
+pub use event::*;
+pub use health::*;
+pub use stream::*;

@@ -11,9 +11,7 @@ use axum::{
 use clap::Parser;
 use core::net::SocketAddr;
 use dotenvy::dotenv;
-use routes::{
-    PlayerEventStreamUpdate, health_handler, player_events_sse_handler, send_loginstate_handler,
-};
+use routes::{PlayerEventStreamUpdate, event_stream_handler, health_handler, send_event_handler};
 use tokio::{net::TcpListener, signal, sync::broadcast};
 use tower_http::{
     catch_panic::CatchPanicLayer,
@@ -64,11 +62,8 @@ async fn main() -> Result<()> {
     let tcp_listener = TcpListener::bind(args.address).await?;
     let router = Router::new()
         .route("/api/health", get(health_handler))
-        .route(
-            "/api/playerevents/loginstate",
-            post(send_loginstate_handler),
-        )
-        .route("/api/playerevents/stream", get(player_events_sse_handler))
+        .route("/api/event", post(send_event_handler))
+        .route("/api/stream", get(event_stream_handler))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))

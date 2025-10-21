@@ -8,7 +8,7 @@ namespace GoodFriend.Client.Http.Requests;
 /// </summary>
 public static class GetPlayerEventStreamRequest
 {
-    private const string EndpointUrl = "api/playerevents/stream";
+    private const string EndpointUrl = "api/stream";
 
     /// <summary>
     ///     Creates a new SSE client for the player event stream using its endpoint URL.

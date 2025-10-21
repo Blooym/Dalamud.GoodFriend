@@ -184,16 +184,11 @@ internal sealed class LoginStateModule : BaseModule
     ///     Called when a player state update is received.
     /// </summary>
     /// <param name="sender"></param>
-    /// <param name="rawEvent"></param>
-    private unsafe void HandlePlayerStreamMessage(object? sender, PlayerEventStreamUpdate rawEvent)
+    /// <param name="update"></param>
+    private unsafe void HandlePlayerStreamMessage(object? sender, PlayerEventStreamUpdate update)
     {
         if (!this.Config.ReceiveEvents)
         {
-            return;
-        }
-        if (!rawEvent.StateUpdateType.LoginStateChange.HasValue)
-        {
-            Logger.Verbose("Received player state update that is not a login/logout.");
             return;
         }
         DalamudInjections.Framework.RunOnFrameworkThread(() =>
@@ -205,8 +200,10 @@ internal sealed class LoginStateModule : BaseModule
                 return;
             }
 
+            DalamudInjections.PluginLog.Information($"req: {update}");
+
             // Skip if the event player is not on the players friendslist.
-            var friendFromHash = FriendUtil.GetFriendFromHash(this.cachedFriendList, rawEvent.ContentIdHash, rawEvent.ContentIdSalt);
+            var friendFromHash = FriendUtil.GetFriendFromHash(this.cachedFriendList, update.ContentIdHash, update.ContentIdSalt);
             if (!friendFromHash.HasValue)
             {
                 Logger.Verbose(message: $"Ignoring player event as a friend could not be found from the received hash.");
@@ -225,12 +222,11 @@ internal sealed class LoginStateModule : BaseModule
             // This state shouldn't be possible, but it has been observed a few times.
             if (string.IsNullOrWhiteSpace(friendCharacterData.NameString))
             {
-                Logger.Warning($"Login state event matched via hash but the name was null or empty. Event ID {rawEvent.ContentIdHash}");
+                Logger.Warning($"Login state event matched via hash but the name was null or empty. Event ID {update.ContentIdHash}");
                 return;
             }
 
             // Get the name and free company tag.
-            var loginStateData = rawEvent.StateUpdateType.LoginStateChange.Value;
             Logger.Debug($"Received login state update from {friendCharacterData.NameString} - checking display eligibility.");
 
             // Evaluate eligibility.
@@ -244,23 +240,23 @@ internal sealed class LoginStateModule : BaseModule
                 Logger.Debug($"Ignoring login state update from different homeworld.");
                 return;
             }
-            if (this.Config.HideDifferentTerritory && loginStateData.TerritoryId != this.currentTerritoryId)
+            if (this.Config.HideDifferentTerritory && update.TerritoryId != this.currentTerritoryId)
             {
                 Logger.Debug($"Ignoring login state update from different territory.");
                 return;
             }
-            if (this.Config.HideDifferentWorld && loginStateData.WorldId != this.currentWorldId)
+            if (this.Config.HideDifferentWorld && update.WorldId != this.currentWorldId)
             {
                 Logger.Debug($"Ignoring login state update from different world.");
                 return;
             }
-            if (this.Config.HideDifferentDatacenter && Services.WorldSheet.GetRow(loginStateData.WorldId).DataCenter.RowId != localPlayer.CurrentWorld.Value.DataCenter.RowId)
+            if (this.Config.HideDifferentDatacenter && Services.WorldSheet.GetRow(update.WorldId).DataCenter.RowId != localPlayer.CurrentWorld.Value.DataCenter.RowId)
             {
                 Logger.Debug($"Ignoring login state update from different data center.");
                 return;
             }
 
-            DalamudInjections.ChatGui.Print(loginStateData.LoggedIn
+            DalamudInjections.ChatGui.Print(update.LoggedIn
                 ? this.Config.LoginMessage.Format(friendCharacterData.NameString)
                 : this.Config.LogoutMessage.Format(friendCharacterData.NameString)
             );

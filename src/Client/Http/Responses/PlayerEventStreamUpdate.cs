@@ -21,46 +21,20 @@ public record struct PlayerEventStreamUpdate
     public string ContentIdSalt { get; set; }
 
     /// <summary>
-    ///     The state update type of the event.
-    /// </summary>
-    [Key(2)]
-    public StateUpdateType StateUpdateType { get; set; }
-}
-
-/// <summary>
-///     Represents the state update type of player event stream update.
-/// </summary>
-[MessagePackObject(AllowPrivate = true)]
-public record struct StateUpdateType
-{
-    /// <summary>
-    ///     Represents the data received relating to a login state change.
-    /// </summary>
-    [Key(0)]
-    public LoginStateChangeData? LoginStateChange { get; set; }
-}
-
-/// <summary>
-///     Represents the data received relating to a login state change.
-/// </summary>
-[MessagePackObject(AllowPrivate = true)]
-public record struct LoginStateChangeData
-{
-    /// <summary>
     ///     Whether the event is a login or logout.
     /// </summary>
-    [Key(0)]
+    [Key(2)]
     public bool LoggedIn { get; set; }
 
     /// <summary>
     ///     The ID of the territory the event occured in.
     /// </summary>
-    [Key(1)]
+    [Key(3)]
     public ushort TerritoryId { get; set; }
 
     /// <summary>
     ///     The ID of the world the event occured in.
     /// </summary>
-    [Key(2)]
+    [Key(4)]
     public uint WorldId { get; set; }
 }

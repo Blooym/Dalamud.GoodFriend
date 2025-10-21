@@ -1,6 +1,6 @@
 namespace GoodFriend.Client.Http.Requests;
 
-public static class GlobalRequestData
+public static class RequestConstants
 {
     public static class Validation
     {

@@ -12,7 +12,8 @@ namespace GoodFriend.Client.Http.Requests;
 /// </summary>
 public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayerLoginStateRequest.RequestData, HttpResponseMessage>
 {
-    private const string EndpointUrl = "api/playerevents/loginstate";
+    private const string EndpointUrl = "api/event";
+
 
     [MessagePackObject(AllowPrivate = true)]
     internal readonly struct RequestBody
@@ -27,7 +28,6 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         public required ushort TerritoryId { get; init; }
         [Key(4)]
         public required uint WorldId { get; init; }
-
     }
 
     public readonly record struct RequestData
@@ -45,7 +45,7 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         {
             get => this.contentIdHashBackingField; init
             {
-                if (value.Length < GlobalRequestData.Validation.ContentIdHashMinLength)
+                if (value.Length < RequestConstants.Validation.ContentIdHashMinLength)
                 {
                     throw new ArgumentException("ContentIdHash must be at least 64 characters in length");
                 }
@@ -65,7 +65,7 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         {
             get => this.contentIdSaltBackingField; init
             {
-                if (value.Length < GlobalRequestData.Validation.ContentIdSaltMinLength)
+                if (value.Length < RequestConstants.Validation.ContentIdSaltMinLength)
                 {
                     throw new ArgumentException("ContentIdSalt must be at least 32 characters in length");
                 }

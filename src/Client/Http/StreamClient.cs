@@ -227,40 +227,40 @@ public sealed class StreamClient<T> : IDisposable where T : struct
 
         try
         {
+            Exception? streamException = null;
             this.ConnectionState = StreamClientConnectionState.Connecting;
             await using var stream = await this.httpClient.GetStreamAsync(this.url);
-            var reader = new MessagePackStreamReader(stream);
-            Exception? exception = null;
+            using var reader = new MessagePackStreamReader(stream);
             this.ConnectionState = StreamClientConnectionState.Connected;
             this.OnStreamConnected?.Invoke(this);
 
-            while (this.ConnectionState == StreamClientConnectionState.Connected)
+            while (this.ConnectionState is StreamClientConnectionState.Connected)
             {
                 try
                 {
                     var message = await reader.ReadAsync(default);
-                    if (message == null)
+                    if (message is null)
                     {
                         break;
+                    }
+                    if (message.Value.Length == 1 && message.Value.First.Span[0] is 0x90) // Heartbeats with empty messagepack array
+                    {
+                        this.OnStreamHeartbeat?.Invoke(this);
+                        continue;
                     }
                     var data = MessagePackSerializer.Deserialize<T>(message.Value);
                     this.OnStreamMessage?.Invoke(this, data);
                 }
-                catch (MessagePackSerializationException)
-                {
-                    continue;
-                }
                 catch (Exception e)
                 {
-                    exception = e;
+                    streamException = e;
                     break;
                 }
             }
 
-            if (this.ConnectionState == StreamClientConnectionState.Connected)
+            if (this.ConnectionState is StreamClientConnectionState.Connected)
             {
-                this.ConnectionState = StreamClientConnectionState.Exception;
-                this.OnStreamException?.Invoke(this, exception ?? new HttpRequestException("Connection to stream suddenly closed."));
+                throw streamException ?? new HttpRequestException("Connection to stream suddenly closed.");
             }
         }
         catch (Exception e)

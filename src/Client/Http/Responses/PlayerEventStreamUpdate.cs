@@ -12,13 +12,13 @@ public record struct PlayerEventStreamUpdate
     ///     The ContentID Hash of the player.
     /// </summary>
     [Key(0)]
-    public string ContentIdHash { get; set; }
+    public byte[] ContentIdHash { get; set; }
 
     /// <summary>
     ///     The salt used when hashing the player's ContentID.
     /// </summary>
     [Key(1)]
-    public string ContentIdSalt { get; set; }
+    public byte[] ContentIdSalt { get; set; }
 
     /// <summary>
     ///     Whether the event is a login or logout.

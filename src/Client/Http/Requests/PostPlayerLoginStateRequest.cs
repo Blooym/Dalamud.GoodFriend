@@ -19,9 +19,9 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
     internal readonly struct RequestBody
     {
         [Key(0)]
-        public required string ContentIdHash { get; init; }
+        public required byte[] ContentIdHash { get; init; }
         [Key(1)]
-        public required string ContentIdSalt { get; init; }
+        public required byte[] ContentIdSalt { get; init; }
         [Key(2)]
         public required bool LoggedIn { get; init; }
         [Key(3)]
@@ -32,42 +32,41 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
 
     public readonly record struct RequestData
     {
-        private readonly string contentIdHashBackingField;
+        private readonly byte[] contentIdHashBackingField;
 
         /// <summary>
         ///     The hash of the player's ContentId.
         /// </summary>
         /// <remarks>
-        ///     - This value must be at least 64 characters in length. <br/>
-        ///     - This value must be unique across every request.
+        ///     - This value must be 32 bytes in length.<br/>
         /// </remarks>
-        public required string ContentIdHash
+        public required byte[] ContentIdHash
         {
             get => this.contentIdHashBackingField; init
             {
-                if (value.Length < RequestConstants.Validation.ContentIdHashMinLength)
+                if ((uint)value.Length is RequestConstants.Validation.ContentIdHashLength)
                 {
-                    throw new ArgumentException("ContentIdHash must be at least 64 characters in length");
+                    throw new ArgumentException("ContentIdHash must be exactly 32 bytes in length");
                 }
                 this.contentIdHashBackingField = value;
             }
         }
 
-        private readonly string contentIdSaltBackingField;
+        private readonly byte[] contentIdSaltBackingField;
 
         /// <summary>
         ///     The salt used when hashing the player's ContentId.
         /// </summary>
         /// <remarks>
-        ///     - This value must be at least 32 characters in length.
+        ///     - This value must be 16 bytes in length.
         /// </remarks>
-        public required string ContentIdSalt
+        public required byte[] ContentIdSalt
         {
             get => this.contentIdSaltBackingField; init
             {
-                if (value.Length < RequestConstants.Validation.ContentIdSaltMinLength)
+                if ((uint)value.Length is RequestConstants.Validation.ContentIdSaltLength)
                 {
-                    throw new ArgumentException("ContentIdSalt must be at least 32 characters in length");
+                    throw new ArgumentException("ContentIdSalt must be exactly 16 bytes in length");
                 }
                 this.contentIdSaltBackingField = value;
             }

@@ -4,7 +4,7 @@ public static class RequestConstants
 {
     public static class Validation
     {
-        public const uint ContentIdHashMinLength = 64;
-        public const uint ContentIdSaltMinLength = 32;
+        public const uint ContentIdHashLength = 32;
+        public const uint ContentIdSaltLength = 16;
     }
 }

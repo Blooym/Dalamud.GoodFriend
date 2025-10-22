@@ -11,7 +11,7 @@ use axum::{
 use clap::Parser;
 use core::net::SocketAddr;
 use dotenvy::dotenv;
-use routes::{PlayerEventStreamUpdate, event_stream_handler, health_handler, send_event_handler};
+use routes::{EventStreamMessage, event_stream_handler, health_handler, send_event_handler};
 use tokio::{net::TcpListener, signal, sync::broadcast};
 use tower_http::{
     catch_panic::CatchPanicLayer,
@@ -21,7 +21,7 @@ use tower_http::{
 use tracing::{Level, info};
 use tracing_subscriber::EnvFilter;
 
-#[derive(Debug, Clone, Parser)]
+#[derive(Parser)]
 #[clap(author, about, long_about, version)]
 struct Arguments {
     /// Internet socket address that the server should be ran on.
@@ -31,19 +31,11 @@ struct Arguments {
         default_value = "127.0.0.1:8001"
     )]
     address: SocketAddr,
-
-    /// The total capacity of the events SSE stream.
-    #[arg(
-        long = "api-sse-capacity",
-        env = "GOODFRIEND_API_SSE_CAPACITY",
-        default_value_t = 10000
-    )]
-    pub sse_capacity: usize,
 }
 
 #[derive(Clone)]
 struct AppState {
-    events_broadcast_channel: broadcast::Sender<PlayerEventStreamUpdate>,
+    events_broadcast_channel: broadcast::Sender<EventStreamMessage>,
 }
 
 #[tokio::main]
@@ -55,9 +47,9 @@ async fn main() -> Result<()> {
     let args = Arguments::parse();
 
     // Start server.
+    let stream_channel = broadcast::channel::<EventStreamMessage>(16).0;
     let app_state = AppState {
-        events_broadcast_channel: broadcast::channel::<PlayerEventStreamUpdate>(args.sse_capacity)
-            .0,
+        events_broadcast_channel: stream_channel.clone(),
     };
     let tcp_listener = TcpListener::bind(args.address).await?;
     let router = Router::new()
@@ -89,13 +81,13 @@ async fn main() -> Result<()> {
 
     info!("Internal server started at http://{}", args.address);
     axum::serve(tcp_listener, router)
-        .with_graceful_shutdown(shutdown_signal())
+        .with_graceful_shutdown(shutdown_signal(stream_channel))
         .await?;
     Ok(())
 }
 
 // https://github.com/tokio-rs/axum/blob/15917c6dbcb4a48707a20e9cfd021992a279a662/examples/graceful-shutdown/src/main.rs#L55
-async fn shutdown_signal() {
+async fn shutdown_signal(channel: broadcast::Sender<EventStreamMessage>) {
     let ctrl_c = async {
         signal::ctrl_c()
             .await
@@ -117,4 +109,6 @@ async fn shutdown_signal() {
         _ = ctrl_c => {},
         _ = terminate => {},
     }
+
+    let _ = channel.send(EventStreamMessage::Shutdown);
 }

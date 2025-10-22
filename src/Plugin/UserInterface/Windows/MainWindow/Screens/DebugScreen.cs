@@ -59,7 +59,7 @@ internal static class DebugScreen
             {
                 foreach (var f in FriendHelper.FriendList)
                 {
-                    if (f.ExtraFlags == Constants.WaitingForFriendListApprovalStatus)
+                    if (f.ExtraFlags is Constants.WaitingForFriendListApprovalStatus)
                     {
                         continue;
                     }
@@ -72,7 +72,7 @@ internal static class DebugScreen
                     if (ImGui.Selectable(f.NameString))
                     {
                         var salt = CryptoUtil.GenerateSalt();
-                        var hash = CryptoUtil.HashValue(f.ContentId, salt);
+                        var hash = CryptoUtil.HashValueWithSalt(f.ContentId, salt);
                         ImGui.SetClipboardText($"Friend: {f.NameString} Hash: {hash} | Salt: {salt}");
                         ChatHelper.Print(string.Format(Strings.UI_MainWindow_DebugScreen_DetectedFriends_Copied, f.NameString), 708);
                     }

@@ -18,27 +18,28 @@ internal static class CryptoUtil
     private static Guid GetModuleVersionId() => Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId;
 
     /// <summary>
-    ///     Generates a random salt of the given length.
+    ///     Generates a random 16 byte salt.
     /// </summary>
-    /// <param name="length">The length of the salt to generate.</param>
-    public static string GenerateSalt(uint length = 32)
+    public static byte[] GenerateSalt()
     {
         using var seed = RandomNumberGenerator.Create();
-        var bytes = new byte[length];
+        var bytes = new byte[16];
         seed.GetBytes(bytes);
-        return Convert.ToHexString(bytes);
+        return bytes;
     }
 
     /// <summary>
-    ///     Hashes the given value and returns it as a hex string.
+    ///     Creates a 32 byte HMACSHA256 hash from the given value and salt.
+    ///     This also uses the user's configured PrivateGroupKey as the HMAC key if one is set,
+    ///     as well as other build-time constants to ensure the hash is unique.
     /// </summary>
     /// <param name="value">The value to hash.</param>
-    /// <param name="salt">The salt to use.</param>
-    public static string HashValue(object value, string salt)
+    /// <param name="salt">The salt to hash with. Recommended to use the <see cref="GenerateSalt"/> method for this.</param>
+    public static byte[] HashValueWithSalt(object value, byte[] salt)
     {
-        var dataBytes = Encoding.UTF8.GetBytes($"{value}{DateTime.UtcNow:yyyyMMddHH}{salt}{GetModuleVersionId()}");
+        var dataBytes = Encoding.UTF8.GetBytes($"{value}:{salt}:{DateTime.UtcNow:yyyyMMddHH}:{GetModuleVersionId()}");
         var keyBytes = Encoding.UTF8.GetBytes(Services.PluginConfiguration.ApiConfig.PrivateGroupKey);
         using var hmac = new HMACSHA256(keyBytes);
-        return Convert.ToHexString(hmac.ComputeHash(dataBytes));
+        return hmac.ComputeHash(dataBytes);
     }
 }

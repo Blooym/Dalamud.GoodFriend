@@ -120,7 +120,7 @@ internal sealed class CurrentFriendsOnlineModule : BaseModule
                     unsafe
                     {
 
-                        var chatMessage = new SeStringBuilder().AddText(onlineFriendCount == 1
+                        var chatMessage = new SeStringBuilder().AddText(onlineFriendCount is 1
                             ? string.Format(Strings.Modules_CurrentFriendsOnlineModule_SingularFriendOnline, onlineFriendCount)
                             : string.Format(Strings.Modules_CurrentFriendsOnlineModule_PluralFriendsOnline, onlineFriendCount));
                         foreach (var friend in characterData)

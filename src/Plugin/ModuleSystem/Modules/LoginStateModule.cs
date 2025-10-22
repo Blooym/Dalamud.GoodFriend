@@ -200,21 +200,16 @@ internal sealed class LoginStateModule : BaseModule
                 return;
             }
 
-            DalamudInjections.PluginLog.Information($"req: {update}");
-
-            // Skip if the event player is not on the players friendslist.
-            var friendFromHash = FriendUtil.GetFriendFromHash(this.cachedFriendList, update.ContentIdHash, update.ContentIdSalt);
-            if (!friendFromHash.HasValue)
+            // Skip if the event player is not on the player's friends list.
+            if (FriendUtil.GetFriendFromHash(this.cachedFriendList, update.ContentIdHash, update.ContentIdSalt) is not { } friendCharacterData)
             {
                 Logger.Verbose(message: $"Ignoring player event as a friend could not be found from the received hash.");
                 return;
             }
-            var friendCharacterData = friendFromHash.Value;
 
-            // Ignore the event if the friend request is pending.
-            if (friendCharacterData.ExtraFlags == Constants.WaitingForFriendListApprovalStatus)
+            // Ignore the event if the friend request is pending on the player's side.
+            if (friendCharacterData.ExtraFlags is Constants.WaitingForFriendListApprovalStatus)
             {
-                Logger.Debug($"Ignoring login state event for a pending friend request.");
                 return;
             }
 
@@ -222,37 +217,34 @@ internal sealed class LoginStateModule : BaseModule
             // This state shouldn't be possible, but it has been observed a few times.
             if (string.IsNullOrWhiteSpace(friendCharacterData.NameString))
             {
-                Logger.Warning($"Login state event matched via hash but the name was null or empty. Event ID {update.ContentIdHash}");
+                Logger.Warning($"Login state event matched but the name was null or empty.");
                 return;
             }
-
-            // Get the name and free company tag.
-            Logger.Debug($"Received login state update from {friendCharacterData.NameString} - checking display eligibility.");
 
             // Evaluate eligibility.
             if (this.Config.HideSameFC && friendCharacterData.FCTagString == localPlayer.CompanyTag.TextValue)
             {
-                Logger.Debug($"Ignoring login state update from from the same free company.");
+                Logger.Debug($"Ignoring login state update from {friendCharacterData.NameString} - same free company.");
                 return;
             }
             if (this.Config.HideDifferentHomeworld && friendCharacterData.HomeWorld != this.currentHomeworldId)
             {
-                Logger.Debug($"Ignoring login state update from different homeworld.");
+                Logger.Debug($"Ignoring login state update from {friendCharacterData.NameString} - different homeworld.");
                 return;
             }
             if (this.Config.HideDifferentTerritory && update.TerritoryId != this.currentTerritoryId)
             {
-                Logger.Debug($"Ignoring login state update from different territory.");
+                Logger.Debug($"Ignoring login state update from {friendCharacterData.NameString} - different territory.");
                 return;
             }
             if (this.Config.HideDifferentWorld && update.WorldId != this.currentWorldId)
             {
-                Logger.Debug($"Ignoring login state update from different world.");
+                Logger.Debug($"Ignoring login state update from {friendCharacterData.NameString} - different world.");
                 return;
             }
             if (this.Config.HideDifferentDatacenter && Services.WorldSheet.GetRow(update.WorldId).DataCenter.RowId != localPlayer.CurrentWorld.Value.DataCenter.RowId)
             {
-                Logger.Debug($"Ignoring login state update from different data center.");
+                Logger.Debug($"Ignoring login state update from {friendCharacterData.NameString} - different data center.");
                 return;
             }
 
@@ -264,14 +256,14 @@ internal sealed class LoginStateModule : BaseModule
     }
 
     /// <summary>
-    ///     Called when the player logs in.
+    ///     Set stored values and send a login event.
     /// </summary>
     private void OnLogin()
     {
         this.SetStoredValues();
         Logger.Debug("Sending login event.");
         var salt = CryptoUtil.GenerateSalt();
-        var hash = CryptoUtil.HashValue(this.currentContentId, salt);
+        var hash = CryptoUtil.HashValueWithSalt(this.currentContentId, salt);
         new PostPlayerLoginStateRequest().Send(Services.HttpClient, new()
         {
             ContentIdHash = hash,
@@ -283,12 +275,12 @@ internal sealed class LoginStateModule : BaseModule
     }
 
     /// <summary>
-    ///     Called when the player logs out, sends a logout event.
+    ///     Send a logout event and unset stored values.
     /// </summary>
     private void OnLogout(int type, int code)
     {
         var salt = CryptoUtil.GenerateSalt();
-        var hash = CryptoUtil.HashValue(this.currentContentId, salt);
+        var hash = CryptoUtil.HashValueWithSalt(this.currentContentId, salt);
         Logger.Debug("Sending logout event.");
         new PostPlayerLoginStateRequest().Send(Services.HttpClient, new()
         {
@@ -302,9 +294,8 @@ internal sealed class LoginStateModule : BaseModule
     }
 
     /// <summary>
-    ///     Called when the framework updates, updates stored data that can change during gameplay.
+    ///     Update stored data that can change during gameplay.
     /// </summary>
-    /// <param name="framework"></param>
     private void OnFrameworkUpdate(IFramework framework)
     {
         // Don't run when not logged in.

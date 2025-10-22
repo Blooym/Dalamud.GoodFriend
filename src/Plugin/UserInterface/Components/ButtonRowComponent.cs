@@ -16,7 +16,7 @@ internal static class ButtonRowComponent
     /// <param name="buttons"></param>
     public static void DrawRow(Dictionary<(FontAwesomeIcon icon, Vector4? iconSize, string tooltip), Action> buttons)
     {
-        if (buttons.Count == 0)
+        if (buttons.Count is 0)
         {
             return;
         }

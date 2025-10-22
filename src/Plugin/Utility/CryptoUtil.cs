@@ -37,7 +37,7 @@ internal static class CryptoUtil
     /// <param name="salt">The salt to hash with. Recommended to use the <see cref="GenerateSalt"/> method for this.</param>
     public static byte[] HashValueWithSalt(object value, byte[] salt)
     {
-        var dataBytes = Encoding.UTF8.GetBytes($"{value}:{salt}:{DateTime.UtcNow:yyyyMMddHH}:{GetModuleVersionId()}");
+        var dataBytes = Encoding.UTF8.GetBytes($"{value}:{Convert.ToBase64String(salt)}:{DateTime.UtcNow:yyyyMMddHH}:{GetModuleVersionId()}");
         var keyBytes = Encoding.UTF8.GetBytes(Services.PluginConfiguration.ApiConfig.PrivateGroupKey);
         using var hmac = new HMACSHA256(keyBytes);
         return hmac.ComputeHash(dataBytes);

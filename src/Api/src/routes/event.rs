@@ -9,7 +9,9 @@ use tracing::info;
 
 #[derive(Deserialize)]
 pub struct UpdatePlayerLoginStateRequest {
+    #[serde(with = "serde_bytes")]
     pub content_id_hash: [u8; 32],
+    #[serde(with = "serde_bytes")]
     pub content_id_salt: [u8; 16],
     pub logged_in: bool,
     pub territory_id: u16,

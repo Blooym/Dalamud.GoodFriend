@@ -96,7 +96,7 @@ internal sealed class CurrentFriendsOnlineModule : BaseModule
                 // Don't show a message if the player has no friends added.
                 if (FriendHelper.FriendList.Length is 0)
                 {
-                    DalamudInjections.PluginLog.Debug("Friends list was empty upon logging in");
+                    Logger.Debug("Friends list was empty upon logging in");
                     return;
                 }
 
@@ -104,7 +104,7 @@ internal sealed class CurrentFriendsOnlineModule : BaseModule
                 var onlineFriends = FriendHelper.FriendList.ToArray().Where(x => x.State.HasFlag(InfoProxyCommonList.CharacterData.OnlineStatus.Online));
                 var characterData = onlineFriends as InfoProxyCommonList.CharacterData[] ?? [.. onlineFriends];
                 var onlineFriendCount = characterData.Length;
-                DalamudInjections.PluginLog.Debug($"Player has {onlineFriendCount} friends online right now, sending chat message.");
+                Logger.Debug($"Player has {onlineFriendCount} friends online right now, sending chat message.");
                 if (onlineFriendCount is 0)
                 {
                     DalamudInjections.ChatGui.Print(Strings.Modules_CurrentFriendsOnlineModule_NoFriendsOnline);

@@ -44,7 +44,7 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         {
             get => this.contentIdHashBackingField; init
             {
-                if ((uint)value.Length is RequestConstants.Validation.ContentIdHashLength)
+                if ((uint)value.Length is not RequestConstants.Validation.ContentIdHashLength)
                 {
                     throw new ArgumentException("ContentIdHash must be exactly 32 bytes in length");
                 }
@@ -64,7 +64,7 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         {
             get => this.contentIdSaltBackingField; init
             {
-                if ((uint)value.Length is RequestConstants.Validation.ContentIdSaltLength)
+                if ((uint)value.Length is not RequestConstants.Validation.ContentIdSaltLength)
                 {
                     throw new ArgumentException("ContentIdSalt must be exactly 16 bytes in length");
                 }

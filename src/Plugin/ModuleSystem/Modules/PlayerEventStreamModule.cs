@@ -47,14 +47,14 @@ internal sealed class PlayerEventStreamModule : BaseModule
         {
             if (DalamudInjections.ClientState.IsLoggedIn && IsPlayerStreamDisconnected())
             {
-                Services.PlayerEventSseStream.Connect();
+                Services.PlayerEventStream.Connect();
             }
         });
         DalamudInjections.ClientState.Login += this.OnLogin;
         DalamudInjections.ClientState.Logout += this.OnLogout;
-        Services.PlayerEventSseStream.OnStreamHeartbeat += this.OnPlayerStreamHeartbeat;
-        Services.PlayerEventSseStream.OnStreamMessage += this.OnPlayerStreamEvent;
-        Services.PlayerEventSseStream.OnStreamException += this.OnPlayerStreamException;
+        Services.PlayerEventStream.OnStreamHeartbeat += this.OnPlayerStreamHeartbeat;
+        Services.PlayerEventStream.OnStreamMessage += this.OnPlayerStreamEvent;
+        Services.PlayerEventStream.OnStreamException += this.OnPlayerStreamException;
     }
 
     /// <inheritdoc />
@@ -62,13 +62,13 @@ internal sealed class PlayerEventStreamModule : BaseModule
     {
         if (IsPlayerStreamConnected())
         {
-            Services.PlayerEventSseStream.Connect();
+            Services.PlayerEventStream.Connect();
         }
         DalamudInjections.ClientState.Login -= this.OnLogin;
         DalamudInjections.ClientState.Logout -= this.OnLogout;
-        Services.PlayerEventSseStream.OnStreamHeartbeat -= this.OnPlayerStreamHeartbeat;
-        Services.PlayerEventSseStream.OnStreamMessage -= this.OnPlayerStreamEvent;
-        Services.PlayerEventSseStream.OnStreamException -= this.OnPlayerStreamException;
+        Services.PlayerEventStream.OnStreamHeartbeat -= this.OnPlayerStreamHeartbeat;
+        Services.PlayerEventStream.OnStreamMessage -= this.OnPlayerStreamEvent;
+        Services.PlayerEventStream.OnStreamException -= this.OnPlayerStreamException;
     }
 
     /// <inheritdoc />
@@ -76,7 +76,7 @@ internal sealed class PlayerEventStreamModule : BaseModule
     {
         SiGui.TextWrapped(Strings.Modules_PlayerStreamConnectionModule_ConnectionStatus);
         ImGui.SameLine();
-        switch (Services.PlayerEventSseStream.ConnectionState)
+        switch (Services.PlayerEventStream.ConnectionState)
         {
             case StreamClientConnectionState.Connected:
                 SiGui.TextColoured(Colours.Success, Strings.Modules_PlayerStreamConnectionModule_ConnectionStatus_Connected);
@@ -109,7 +109,7 @@ internal sealed class PlayerEventStreamModule : BaseModule
     {
         if (IsPlayerStreamDisconnected())
         {
-            Services.PlayerEventSseStream.Connect();
+            Services.PlayerEventStream.Connect();
         }
     }
 
@@ -120,7 +120,7 @@ internal sealed class PlayerEventStreamModule : BaseModule
     {
         if (IsPlayerStreamConnected())
         {
-            Services.PlayerEventSseStream.Disconnect();
+            Services.PlayerEventStream.Disconnect();
         }
     }
 
@@ -158,11 +158,11 @@ internal sealed class PlayerEventStreamModule : BaseModule
     ///     If the player event stream is connected or connecting.
     /// </summary>
     /// <returns></returns>
-    private static bool IsPlayerStreamConnected() => Services.PlayerEventSseStream.ConnectionState is StreamClientConnectionState.Connected or StreamClientConnectionState.Connecting;
+    private static bool IsPlayerStreamConnected() => Services.PlayerEventStream.ConnectionState is StreamClientConnectionState.Connected or StreamClientConnectionState.Connecting;
 
     /// <summary>
     ///     If the player event stream is disconnected or disconnecting.
     /// </summary>
     /// <returns></returns>
-    private static bool IsPlayerStreamDisconnected() => Services.PlayerEventSseStream.ConnectionState is StreamClientConnectionState.Disconnected or StreamClientConnectionState.Disconnecting;
+    private static bool IsPlayerStreamDisconnected() => Services.PlayerEventStream.ConnectionState is StreamClientConnectionState.Disconnected or StreamClientConnectionState.Disconnecting;
 }

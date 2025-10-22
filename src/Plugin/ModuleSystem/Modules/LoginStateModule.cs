@@ -61,7 +61,7 @@ internal sealed class LoginStateModule : BaseModule
     /// <inheritdoc />
     protected override void OnEnable()
     {
-        Services.PlayerEventSseStream.OnStreamMessage += this.HandlePlayerStreamMessage;
+        Services.PlayerEventStream.OnStreamMessage += this.HandlePlayerStreamMessage;
         DalamudInjections.Framework.Update += this.OnFrameworkUpdate;
         DalamudInjections.ClientState.Login += this.OnLogin;
         DalamudInjections.ClientState.Logout += this.OnLogout;
@@ -78,7 +78,7 @@ internal sealed class LoginStateModule : BaseModule
     /// <inheritdoc />
     protected override void OnDisable()
     {
-        Services.PlayerEventSseStream.OnStreamMessage -= this.HandlePlayerStreamMessage;
+        Services.PlayerEventStream.OnStreamMessage -= this.HandlePlayerStreamMessage;
         DalamudInjections.Framework.Update -= this.OnFrameworkUpdate;
         DalamudInjections.ClientState.Login -= this.OnLogin;
         DalamudInjections.ClientState.Logout -= this.OnLogout;

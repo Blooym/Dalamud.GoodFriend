@@ -1,6 +1,6 @@
 using System;
+using System.Linq;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
-using GoodFriend.Plugin.Base;
 
 namespace GoodFriend.Plugin.Utility;
 
@@ -17,7 +17,12 @@ internal static class FriendUtil
     {
         foreach (var friend in friends)
         {
-            if (CryptoUtil.HashValueWithSalt(friend.ContentId, salt) == hash)
+            if (friend.ContentId is 0)
+            {
+                continue;
+            }
+
+            if (CryptoUtil.HashValueWithSalt(friend.ContentId, salt).SequenceEqual(hash))
             {
                 return friend;
             }

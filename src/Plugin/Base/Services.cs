@@ -19,11 +19,10 @@ namespace GoodFriend.Plugin.Base;
 /// </summary>
 internal static class Services
 {
-    // SSE
-    private static readonly TimeSpan SseReconnectDelayMin = TimeSpan.FromSeconds(30);
-    private static readonly TimeSpan SseReconnectDelayMax = TimeSpan.FromMinutes(10);
-    private static readonly TimeSpan SseReconnectDelayIncrement = TimeSpan.FromSeconds(30);
-    public static StreamClient<PlayerEventStreamUpdate> PlayerEventSseStream { get; private set; } = null!;
+    private static readonly TimeSpan StreamClientReconnectDelayMin = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan StreamClientReconnectDelayMax = TimeSpan.FromMinutes(10);
+    private static readonly TimeSpan StreamClientReconnectDelayIncrement = TimeSpan.FromSeconds(30);
+    public static StreamClient<PlayerEventStreamUpdate> PlayerEventStream { get; private set; } = null!;
 
     private static WindowingService WindowingService { get; set; } = null!;
     private static LocalizationManager LocalizationService { get; set; } = null!;
@@ -42,11 +41,11 @@ internal static class Services
         PluginConfiguration = PluginConfiguration.Load();
         LocalizationService = new LocalizationManager();
         HttpClient = CreateHttpClient(HappyEyeballsCallback);
-        PlayerEventSseStream = GetPlayerEventStreamRequest.CreateSseClient(CreateHttpClient(HappyEyeballsCallback), new()
+        PlayerEventStream = GetPlayerEventStreamRequest.CreateStreamClient(CreateHttpClient(HappyEyeballsCallback), new()
         {
-            ReconnectDelayMin = SseReconnectDelayMin,
-            ReconnectDelayMax = SseReconnectDelayMax,
-            ReconnectDelayIncrement = SseReconnectDelayIncrement
+            ReconnectDelayMin = StreamClientReconnectDelayMin,
+            ReconnectDelayMax = StreamClientReconnectDelayMax,
+            ReconnectDelayIncrement = StreamClientReconnectDelayIncrement
         });
         WorldSheet = DalamudInjections.DataManager.GetExcelSheet<World>();
         ModuleService = new ModuleService();
@@ -59,7 +58,7 @@ internal static class Services
         WindowingService.Dispose();
         ModuleService.Dispose();
         HttpClient.Dispose();
-        PlayerEventSseStream.Dispose();
+        PlayerEventStream.Dispose();
         HappyEyeballsCallback.Dispose();
     }
 

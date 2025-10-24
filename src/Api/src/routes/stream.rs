@@ -31,6 +31,8 @@ pub enum EventStreamMessage {
     Shutdown,
 }
 
+// Note: using Bytes instead of Vec<u8> allows for the internal event data to be cheap to clone
+// instead or requiring a full re-allocation, making usage with broadcast channels more efficient.
 #[derive(Clone)]
 pub struct SerializedEventData(Bytes);
 

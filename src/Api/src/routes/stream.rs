@@ -1,7 +1,7 @@
 use crate::AppState;
 use anyhow::Result;
 use axum::{
-    body::Body,
+    body::{Body, Bytes},
     extract::State,
     http::{HeaderName, header},
     response::IntoResponse,
@@ -32,18 +32,18 @@ pub enum EventStreamMessage {
 }
 
 #[derive(Clone)]
-pub struct SerializedEventData(Vec<u8>);
+pub struct SerializedEventData(Bytes);
 
 impl SerializedEventData {
     pub fn new(data: &EventData) -> Result<Self, rmp_serde::encode::Error> {
         let serialized = rmp_serde::to_vec(data)?;
-        Ok(SerializedEventData(serialized))
+        Ok(SerializedEventData(Bytes::from(serialized)))
     }
 }
 
 pub async fn event_stream_handler(State(state): State<AppState>) -> impl IntoResponse {
     const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(30);
-    const HEARTBEAT_DATA: &[u8] = &[0x90]; // An empty MessagePack object.
+    const HEARTBEAT_DATA: Bytes = Bytes::from_static(&[0x90]);
     let rx = state.events_broadcast_channel.subscribe();
 
     // Setup 3 streams:
@@ -51,12 +51,12 @@ pub async fn event_stream_handler(State(state): State<AppState>) -> impl IntoRes
     // - Interval stream that periodically send heartbeats to keep connections alive.
     // - Listener stream that handles sending events to clients and listens for shutdowns.
     // Merge them all into a single stream and send it.
-    let initial_heartbeat = tokio_stream::once((HEARTBEAT_DATA.to_vec(), false));
-    let heartbeat_stream = IntervalStream::new(time::interval(HEARTBEAT_INTERVAL))
-        .map(|_| (HEARTBEAT_DATA.to_vec(), false));
+    let initial_heartbeat = tokio_stream::once((HEARTBEAT_DATA, false));
+    let heartbeat_stream =
+        IntervalStream::new(time::interval(HEARTBEAT_INTERVAL)).map(|_| (HEARTBEAT_DATA, false));
     let event_stream = BroadcastStream::new(rx).filter_map(move |msg| match msg.ok()? {
         EventStreamMessage::Data(data) => Some((data.0, false)),
-        EventStreamMessage::Shutdown => Some((vec![], true)),
+        EventStreamMessage::Shutdown => Some((Bytes::new(), true)),
     });
     let stream = initial_heartbeat
         .chain(StreamExt::merge(event_stream, heartbeat_stream))

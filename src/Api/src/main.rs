@@ -47,7 +47,7 @@ async fn main() -> Result<()> {
     let args = Arguments::parse();
 
     // Start server.
-    let stream_channel = broadcast::channel::<EventStreamMessage>(16).0;
+    let stream_channel = broadcast::channel::<EventStreamMessage>(6).0;
     let app_state = AppState {
         events_broadcast_channel: stream_channel.clone(),
     };

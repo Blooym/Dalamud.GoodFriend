@@ -1,11 +1,11 @@
 use crate::{
     AppState,
-    routes::{EventStreamData, EventStreamMessage},
+    routes::{EventData, EventStreamMessage, SerializedEventData},
 };
 use axum::{extract::State, http::StatusCode};
 use axum_msgpack::MsgPack;
 use serde::Deserialize;
-use tracing::info;
+use tracing::{error, info};
 
 #[derive(Deserialize)]
 pub struct UpdatePlayerLoginStateRequest {
@@ -24,14 +24,21 @@ pub async fn send_event_handler(
 ) -> StatusCode {
     let _ = state
         .events_broadcast_channel
-        .send(EventStreamMessage::Data(EventStreamData {
-            content_id_hash: update.content_id_hash,
-            content_id_salt: update.content_id_salt,
-            world_id: update.world_id,
-            territory_id: update.territory_id,
-            logged_in: update.logged_in,
-        }));
-
+        .send(EventStreamMessage::Data(
+            match SerializedEventData::new(&EventData {
+                content_id_hash: update.content_id_hash,
+                content_id_salt: update.content_id_salt,
+                world_id: update.world_id,
+                territory_id: update.territory_id,
+                logged_in: update.logged_in,
+            }) {
+                Ok(data) => data,
+                Err(err) => {
+                    error!("Failed to serialise event data: {err:?}");
+                    return StatusCode::INTERNAL_SERVER_ERROR;
+                }
+            },
+        ));
     info!(
         "Sent event to {} subscribers",
         state.events_broadcast_channel.receiver_count()

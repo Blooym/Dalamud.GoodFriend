@@ -264,7 +264,7 @@ internal sealed class LoginStateModule : BaseModule
         Logger.Debug("Sending login event.");
         var salt = CryptoUtil.GenerateSalt();
         var hash = CryptoUtil.HashValueWithSalt(this.currentContentId, salt);
-        new PostPlayerLoginStateRequest().Send(Services.HttpClient, new()
+        new PlayerLoginStateRequest().Send(Services.HttpClient, new()
         {
             ContentIdHash = hash,
             ContentIdSalt = salt,
@@ -282,7 +282,7 @@ internal sealed class LoginStateModule : BaseModule
         var salt = CryptoUtil.GenerateSalt();
         var hash = CryptoUtil.HashValueWithSalt(this.currentContentId, salt);
         Logger.Debug("Sending logout event.");
-        new PostPlayerLoginStateRequest().Send(Services.HttpClient, new()
+        new PlayerLoginStateRequest().Send(Services.HttpClient, new()
         {
             ContentIdHash = hash,
             ContentIdSalt = salt,

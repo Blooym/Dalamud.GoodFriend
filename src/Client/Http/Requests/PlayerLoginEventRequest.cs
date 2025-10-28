@@ -10,7 +10,7 @@ namespace GoodFriend.Client.Http.Requests;
 /// <summary>
 ///     Represents the request data for sending a player login state.
 /// </summary>
-public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayerLoginStateRequest.RequestData, HttpResponseMessage>
+public sealed class PlayerLoginStateRequest : IHttpRequestHandler<PlayerLoginStateRequest.RequestData, HttpResponseMessage>
 {
     private const string EndpointUrl = "api/event";
 
@@ -44,7 +44,7 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         {
             get => this.contentIdHashBackingField; init
             {
-                if ((uint)value.Length is not RequestConstants.Validation.ContentIdHashLength)
+                if ((uint)value.Length is not 32)
                 {
                     throw new ArgumentException("ContentIdHash must be exactly 32 bytes in length");
                 }
@@ -64,7 +64,7 @@ public sealed class PostPlayerLoginStateRequest : IHttpRequestHandler<PostPlayer
         {
             get => this.contentIdSaltBackingField; init
             {
-                if ((uint)value.Length is not RequestConstants.Validation.ContentIdSaltLength)
+                if ((uint)value.Length is not 16)
                 {
                     throw new ArgumentException("ContentIdSalt must be exactly 16 bytes in length");
                 }

@@ -41,7 +41,7 @@ internal static class Services
         PluginConfiguration = PluginConfiguration.Load();
         LocalizationService = new LocalizationManager();
         HttpClient = CreateHttpClient(HappyEyeballsCallback);
-        PlayerEventStream = GetPlayerEventStreamRequest.CreateStreamClient(CreateHttpClient(HappyEyeballsCallback), new()
+        PlayerEventStream = PlayerEventStreamRequest.CreateStreamClient(CreateHttpClient(HappyEyeballsCallback), new()
         {
             ReconnectDelayMin = StreamClientReconnectDelayMin,
             ReconnectDelayMax = StreamClientReconnectDelayMax,

@@ -5,7 +5,7 @@ using MessagePack;
 
 namespace GoodFriend.Client.Http;
 
-public enum StreamClientConnectionState
+public enum StreamClientState
 {
     /// <summary>
     ///     The client is currently connected to the stream.
@@ -82,7 +82,7 @@ public sealed class StreamClient<T> : IDisposable where T : struct
     /// <summary>
     ///     The current connection state.
     /// </summary>
-    public StreamClientConnectionState ConnectionState { get; private set; } = StreamClientConnectionState.Disconnected;
+    public StreamClientState ConnectionState { get; private set; } = StreamClientState.Disconnected;
 
     /// <summary>
     ///     Fires when the stream is connected.
@@ -170,7 +170,7 @@ public sealed class StreamClient<T> : IDisposable where T : struct
     private void HandleReconnectTimerElapse(object? sender, ElapsedEventArgs e)
     {
         // Already reconnected, reset and stop the timer.
-        if (this.ConnectionState is not StreamClientConnectionState.Exception)
+        if (this.ConnectionState is not StreamClientState.Exception)
         {
             this.reconnectTimer.Interval = this.settings.ReconnectDelayMin.TotalMilliseconds;
             this.reconnectTimer.Stop();
@@ -220,7 +220,7 @@ public sealed class StreamClient<T> : IDisposable where T : struct
     public async void Connect()
     {
         ObjectDisposedException.ThrowIf(this.disposedValue, nameof(StreamClient<T>));
-        if (this.ConnectionState is StreamClientConnectionState.Connecting or StreamClientConnectionState.Connected)
+        if (this.ConnectionState is StreamClientState.Connecting or StreamClientState.Connected)
         {
             return;
         }
@@ -228,13 +228,13 @@ public sealed class StreamClient<T> : IDisposable where T : struct
         try
         {
             Exception? streamException = null;
-            this.ConnectionState = StreamClientConnectionState.Connecting;
+            this.ConnectionState = StreamClientState.Connecting;
             await using var stream = await this.httpClient.GetStreamAsync(this.url);
             using var reader = new MessagePackStreamReader(stream);
-            this.ConnectionState = StreamClientConnectionState.Connected;
+            this.ConnectionState = StreamClientState.Connected;
             this.OnStreamConnected?.Invoke(this);
 
-            while (this.ConnectionState is StreamClientConnectionState.Connected)
+            while (this.ConnectionState is StreamClientState.Connected)
             {
                 try
                 {
@@ -258,14 +258,14 @@ public sealed class StreamClient<T> : IDisposable where T : struct
                 }
             }
 
-            if (this.ConnectionState is StreamClientConnectionState.Connected)
+            if (this.ConnectionState is StreamClientState.Connected)
             {
                 throw streamException ?? new HttpRequestException("Connection to stream suddenly closed.");
             }
         }
         catch (Exception e)
         {
-            this.ConnectionState = StreamClientConnectionState.Exception;
+            this.ConnectionState = StreamClientState.Exception;
             this.OnStreamException?.Invoke(this, e);
         }
     }
@@ -277,13 +277,13 @@ public sealed class StreamClient<T> : IDisposable where T : struct
     public void Disconnect()
     {
         ObjectDisposedException.ThrowIf(this.disposedValue, nameof(StreamClient<T>));
-        if (this.ConnectionState is StreamClientConnectionState.Disconnecting or StreamClientConnectionState.Disconnected)
+        if (this.ConnectionState is StreamClientState.Disconnecting or StreamClientState.Disconnected)
         {
             return;
         }
-        this.ConnectionState = StreamClientConnectionState.Disconnecting;
+        this.ConnectionState = StreamClientState.Disconnecting;
         this.httpClient.CancelPendingRequests();
-        this.ConnectionState = StreamClientConnectionState.Disconnected;
+        this.ConnectionState = StreamClientState.Disconnected;
         this.OnStreamDisconnected?.Invoke(this);
     }
 }

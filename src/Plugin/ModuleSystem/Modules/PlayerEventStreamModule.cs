@@ -78,19 +78,19 @@ internal sealed class PlayerEventStreamModule : BaseModule
         ImGui.SameLine();
         switch (Services.PlayerEventStream.ConnectionState)
         {
-            case StreamClientConnectionState.Connected:
+            case StreamClientState.Connected:
                 SiGui.TextColoured(Colours.Success, Strings.Modules_PlayerStreamConnectionModule_ConnectionStatus_Connected);
                 break;
-            case StreamClientConnectionState.Connecting:
+            case StreamClientState.Connecting:
                 SiGui.TextColoured(Colours.Warning, Strings.Modules_PlayerStreamConnectionModule_ConnectionStatus_Connecting);
                 break;
-            case StreamClientConnectionState.Disconnected:
+            case StreamClientState.Disconnected:
                 SiGui.TextColoured(Colours.Error, Strings.Modules_PlayerStreamConnectionModule_ConnectionStatus_Disconnected);
                 break;
-            case StreamClientConnectionState.Disconnecting:
+            case StreamClientState.Disconnecting:
                 SiGui.TextColoured(Colours.Warning, Strings.Modules_PlayerStreamConnectionModule_ConnectionStatus_Disconnecting);
                 break;
-            case StreamClientConnectionState.Exception:
+            case StreamClientState.Exception:
                 SiGui.TextColoured(Colours.Error, Strings.Modules_PlayerStreamConnectionModule_ConnectionStatus_Exception);
                 break;
         }
@@ -158,11 +158,11 @@ internal sealed class PlayerEventStreamModule : BaseModule
     ///     If the player event stream is connected or connecting.
     /// </summary>
     /// <returns></returns>
-    private static bool IsPlayerStreamConnected() => Services.PlayerEventStream.ConnectionState is StreamClientConnectionState.Connected or StreamClientConnectionState.Connecting;
+    private static bool IsPlayerStreamConnected() => Services.PlayerEventStream.ConnectionState is StreamClientState.Connected or StreamClientState.Connecting;
 
     /// <summary>
     ///     If the player event stream is disconnected or disconnecting.
     /// </summary>
     /// <returns></returns>
-    private static bool IsPlayerStreamDisconnected() => Services.PlayerEventStream.ConnectionState is StreamClientConnectionState.Disconnected or StreamClientConnectionState.Disconnecting;
+    private static bool IsPlayerStreamDisconnected() => Services.PlayerEventStream.ConnectionState is StreamClientState.Disconnected or StreamClientState.Disconnecting;
 }

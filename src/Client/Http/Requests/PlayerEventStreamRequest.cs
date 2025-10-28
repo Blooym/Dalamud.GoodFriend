@@ -6,7 +6,7 @@ namespace GoodFriend.Client.Http.Requests;
 /// <summary>
 ///     Represents a request for the player event stream.
 /// </summary>
-public static class GetPlayerEventStreamRequest
+public static class PlayerEventStreamRequest
 {
     private const string EndpointUrl = "api/stream";
 

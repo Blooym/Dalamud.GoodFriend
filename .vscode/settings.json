@@ -9,7 +9,7 @@
     "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
     "dotnet.codeLens.enableReferencesCodeLens": true,
     "dotnet.formatting.organizeImportsOnFormat": true,
-    "dotnet.defaultSolution": "Wholist.sln",
+    "dotnet.defaultSolution": "GoodFriend.sln",
     // Rust
     "rust-analyzer.linkedProjects": [
         "./src/Api/Cargo.toml"

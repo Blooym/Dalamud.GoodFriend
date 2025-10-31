@@ -1,4 +1,6 @@
+using System;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
@@ -248,10 +250,25 @@ internal sealed class LoginStateModule : BaseModule
                 return;
             }
 
-            DalamudInjections.ChatGui.Print(update.LoggedIn
+            // Send message.
+            var message = update.LoggedIn
                 ? this.Config.LoginMessage.Format(friendCharacterData.NameString)
-                : this.Config.LogoutMessage.Format(friendCharacterData.NameString)
-            );
+                : this.Config.LogoutMessage.Format(friendCharacterData.NameString);
+            var nameIndex = message.IndexOf(friendCharacterData.NameString, StringComparison.InvariantCultureIgnoreCase);
+            var seStringBuilder = new SeStringBuilder().AddUiForeground(34);
+            if (friendCharacterData.HomeWorld != DalamudInjections.ClientState.LocalPlayer?.HomeWorld.RowId && nameIndex >= 0)
+            {
+                seStringBuilder.AddText(message[..nameIndex])
+                       .AddText(friendCharacterData.NameString)
+                       .AddIcon(BitmapFontIcon.CrossWorld)
+                       .AddText(Services.WorldSheet.GetRow(friendCharacterData.HomeWorld).Name.ExtractText())
+                       .AddText(message[(nameIndex + friendCharacterData.NameString.Length)..]);
+            }
+            else
+            {
+                seStringBuilder.AddText(message);
+            }
+            DalamudInjections.ChatGui.Print(seStringBuilder.Build());
         });
     }
 
@@ -394,12 +411,12 @@ internal sealed class LoginStateModule : BaseModule
         /// <summary>
         ///     The message to display when a friend logs in.
         /// </summary>
-        public string LoginMessage { get; set; } = "{0} has logged in.";
+        public string LoginMessage { get; set; } = "Your friend {0} has logged in.";
 
         /// <summary>
         ///     The message to display when a friend logs out.
         /// </summary>
-        public string LogoutMessage { get; set; } = "{0} has logged out.";
+        public string LogoutMessage { get; set; } = "Your friend {0} has logged out.";
 
         /// <summary>
         ///     Validates a login/logout message.

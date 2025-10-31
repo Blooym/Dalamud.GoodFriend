@@ -116,23 +116,18 @@ internal sealed class CurrentFriendsOnlineModule : BaseModule
                         DalamudInjections.ChatGui.Print(string.Format(Strings.Modules_CurrentFriendsOnlineModule_PluralFriendsOnline, onlineFriendCount));
                         return;
                     }
-
-                    unsafe
+                    var chatMessage = new SeStringBuilder().AddText(onlineFriendCount is 1
+                        ? string.Format(Strings.Modules_CurrentFriendsOnlineModule_SingularFriendOnline, onlineFriendCount)
+                        : string.Format(Strings.Modules_CurrentFriendsOnlineModule_PluralFriendsOnline, onlineFriendCount));
+                    foreach (var friend in characterData)
                     {
-
-                        var chatMessage = new SeStringBuilder().AddText(onlineFriendCount is 1
-                            ? string.Format(Strings.Modules_CurrentFriendsOnlineModule_SingularFriendOnline, onlineFriendCount)
-                            : string.Format(Strings.Modules_CurrentFriendsOnlineModule_PluralFriendsOnline, onlineFriendCount));
-                        foreach (var friend in characterData)
+                        chatMessage.AddText($"\n - {friend.NameString}");
+                        if (DalamudInjections.ClientState.LocalPlayer?.HomeWorld.RowId != friend.HomeWorld)
                         {
-                            chatMessage.AddText($"\n - {friend.NameString}");
-                            if (DalamudInjections.ClientState.LocalPlayer?.HomeWorld.RowId != friend.HomeWorld)
-                            {
-                                chatMessage.AddText(" ").AddIcon(BitmapFontIcon.CrossWorld).AddText(Services.WorldSheet.GetRow(friend.HomeWorld).Name.ExtractText());
-                            }
+                            chatMessage.AddText(" ").AddIcon(BitmapFontIcon.CrossWorld).AddText(Services.WorldSheet.GetRow(friend.HomeWorld).Name.ExtractText());
                         }
-                        DalamudInjections.ChatGui.Print(chatMessage.Build());
                     }
+                    DalamudInjections.ChatGui.Print(chatMessage.Build());
                 }
             });
         });

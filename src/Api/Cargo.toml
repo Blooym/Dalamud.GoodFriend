@@ -1,6 +1,6 @@
 [package]
 name = "goodfriend-api"
-version = "3.10.1"
+version = "3.10.2"
 edition = "2024"
 
 [profile.release]
@@ -8,7 +8,7 @@ lto = true
 codegen-units = 1
 
 [dependencies]
-axum = { version = "0.8.6", features = ["http2"] }
+axum = { version = "0.8.7", features = ["http2"] }
 anyhow = "1.0.100"
 clap = { version = "4.5.51", features = ["derive", "env"] }
 dotenvy = "0.15.7"

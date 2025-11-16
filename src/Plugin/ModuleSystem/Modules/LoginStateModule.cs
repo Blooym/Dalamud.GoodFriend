@@ -268,7 +268,7 @@ internal sealed class LoginStateModule : BaseModule
             {
                 seStringBuilder.AddText(message);
             }
-            DalamudInjections.ChatGui.Print(seStringBuilder.Build());
+            DalamudInjections.ChatGui.Print(seStringBuilder.AddUiForegroundOff().Build());
         });
     }
 

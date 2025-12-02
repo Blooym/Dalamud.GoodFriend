@@ -27,7 +27,7 @@ jobs:
         dalamud-branch: ["release", "stg"]
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: true

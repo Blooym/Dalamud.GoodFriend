@@ -18,12 +18,12 @@ internal static class CryptoUtil
     private static Guid GetModuleVersionId() => Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId;
 
     /// <summary>
-    ///     Generates a random 16 byte salt.
+    ///     Generates a random 8 byte salt.
     /// </summary>
     public static byte[] GenerateSalt()
     {
         using var seed = RandomNumberGenerator.Create();
-        var bytes = new byte[16];
+        var bytes = new byte[8];
         seed.GetBytes(bytes);
         return bytes;
     }

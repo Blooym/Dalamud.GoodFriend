@@ -12,7 +12,7 @@ pub struct UpdatePlayerLoginStateRequest {
     #[serde(with = "serde_bytes")]
     pub content_id_hash: [u8; 32],
     #[serde(with = "serde_bytes")]
-    pub content_id_salt: [u8; 16],
+    pub content_id_salt: [u8; 8],
     pub logged_in: bool,
     pub territory_id: u16,
     pub world_id: u16,

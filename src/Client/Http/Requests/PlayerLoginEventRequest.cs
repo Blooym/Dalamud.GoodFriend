@@ -64,9 +64,9 @@ public sealed class PlayerLoginStateRequest : IHttpRequestHandler<PlayerLoginSta
         {
             get => this.contentIdSaltBackingField; init
             {
-                if ((uint)value.Length is not 16)
+                if ((uint)value.Length is not 8)
                 {
-                    throw new ArgumentException("ContentIdSalt must be exactly 16 bytes in length");
+                    throw new ArgumentException("ContentIdSalt must be exactly 8 bytes in length");
                 }
                 this.contentIdSaltBackingField = value;
             }

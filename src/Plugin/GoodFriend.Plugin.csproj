@@ -7,7 +7,7 @@
     <AssemblyName>GoodFriend</AssemblyName>
     <Description>Major improvements to the in-game friend system, like getting login and logout
       notifications for your friends, and much more.</Description>
-    <Version>3.10.2.0</Version>
+    <Version>3.11.0.0</Version>
     <PackageProjectUrl>https://github.com/Blooym/Dalamud.GoodFriend</PackageProjectUrl>
   </PropertyGroup>
 

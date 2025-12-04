@@ -1,6 +1,6 @@
 [package]
 name = "goodfriend-api"
-version = "3.10.2"
+version = "3.11.0"
 edition = "2024"
 
 [profile.release]
@@ -24,7 +24,7 @@ tower-http = { version = "0.6.7", features = [
     "trace",
 ] }
 tracing = "0.1.43"
-tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 tokio-stream = { version = "0.1.17", features = ["sync"] }
 serde = { version = "1.0.228", features = ["derive"] }
 sha2 = "0.10.9"

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net9.0": {
+    "net10.0": {
       "MessagePack": {
         "type": "Direct",
         "requested": "[3.1.4, )",

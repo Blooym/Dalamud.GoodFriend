@@ -70,7 +70,7 @@ internal sealed class LoginStateModule : BaseModule
 
         DalamudInjections.Framework.RunOnFrameworkThread(() =>
         {
-            if (DalamudInjections.ClientState.IsLoggedIn && DalamudInjections.ClientState.LocalPlayer is not null)
+            if (DalamudInjections.ClientState.IsLoggedIn && DalamudInjections.ObjectTable.LocalPlayer is not null)
             {
                 this.SetStoredValues();
             }
@@ -187,7 +187,7 @@ internal sealed class LoginStateModule : BaseModule
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="update"></param>
-    private unsafe void HandlePlayerStreamMessage(object? sender, PlayerEventStreamUpdate update)
+    private void HandlePlayerStreamMessage(object? sender, PlayerEventStreamUpdate update)
     {
         if (!this.Config.ReceiveEvents)
         {
@@ -195,7 +195,7 @@ internal sealed class LoginStateModule : BaseModule
         }
         DalamudInjections.Framework.RunOnFrameworkThread(() =>
         {
-            var localPlayer = DalamudInjections.ClientState.LocalPlayer;
+            var localPlayer = DalamudInjections.ObjectTable.LocalPlayer;
             if (localPlayer is null)
             {
                 Logger.Verbose("Ignoring player state update as the local player is null (not logged in?).");
@@ -256,7 +256,7 @@ internal sealed class LoginStateModule : BaseModule
                 : this.Config.LogoutMessage.Format(friendCharacterData.NameString);
             var nameIndex = message.IndexOf(friendCharacterData.NameString, StringComparison.InvariantCultureIgnoreCase);
             var seStringBuilder = new SeStringBuilder().AddUiForeground(34);
-            if (friendCharacterData.HomeWorld != DalamudInjections.ClientState.LocalPlayer?.HomeWorld.RowId && nameIndex >= 0)
+            if (friendCharacterData.HomeWorld != DalamudInjections.ObjectTable.LocalPlayer?.HomeWorld.RowId && nameIndex >= 0)
             {
                 seStringBuilder.AddText(message[..nameIndex])
                        .AddText(friendCharacterData.NameString)
@@ -316,7 +316,7 @@ internal sealed class LoginStateModule : BaseModule
     private void OnFrameworkUpdate(IFramework framework)
     {
         // Don't run when not logged in.
-        if (!DalamudInjections.ClientState.IsLoggedIn || DalamudInjections.ClientState.LocalPlayer is null)
+        if (!DalamudInjections.ClientState.IsLoggedIn || DalamudInjections.ObjectTable.LocalPlayer is null)
         {
             return;
         }
@@ -329,7 +329,7 @@ internal sealed class LoginStateModule : BaseModule
         }
 
         // Update current world.
-        var currentWorld = DalamudInjections.ClientState.LocalPlayer?.CurrentWorld;
+        var currentWorld = DalamudInjections.ObjectTable.LocalPlayer?.CurrentWorld;
         if (currentWorld.HasValue && currentWorld.Value.RowId != 0 && currentWorld.Value.RowId != this.currentWorldId)
         {
             this.currentWorldId = currentWorld.Value.RowId;
@@ -348,10 +348,10 @@ internal sealed class LoginStateModule : BaseModule
     /// </summary>
     private void SetStoredValues()
     {
-        this.currentContentId = DalamudInjections.ClientState.LocalContentId;
-        this.currentHomeworldId = DalamudInjections.ClientState.LocalPlayer!.HomeWorld.RowId;
+        this.currentContentId = DalamudInjections.PlayerState.ContentId;
+        this.currentHomeworldId = DalamudInjections.ObjectTable.LocalPlayer!.HomeWorld.RowId;
         this.currentTerritoryId = DalamudInjections.ClientState.TerritoryType;
-        this.currentWorldId = DalamudInjections.ClientState.LocalPlayer.CurrentWorld.RowId;
+        this.currentWorldId = DalamudInjections.ObjectTable.LocalPlayer!.CurrentWorld.RowId;
 
         Logger.Debug($"Set stored values: CID: {this.currentContentId}, HW: {this.currentHomeworldId}, T: {this.currentTerritoryId}, W: {this.currentWorldId}");
     }

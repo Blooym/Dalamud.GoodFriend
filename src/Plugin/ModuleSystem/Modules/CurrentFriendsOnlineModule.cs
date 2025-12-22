@@ -122,7 +122,7 @@ internal sealed class CurrentFriendsOnlineModule : BaseModule
                     foreach (var friend in characterData)
                     {
                         chatMessage.AddText($"\n - {friend.NameString}");
-                        if (DalamudInjections.ClientState.LocalPlayer?.HomeWorld.RowId != friend.HomeWorld)
+                        if (DalamudInjections.ObjectTable.LocalPlayer?.HomeWorld.RowId != friend.HomeWorld)
                         {
                             chatMessage.AddText(" ").AddIcon(BitmapFontIcon.CrossWorld).AddText(Services.WorldSheet.GetRow(friend.HomeWorld).Name.ExtractText());
                         }

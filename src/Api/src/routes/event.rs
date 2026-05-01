@@ -14,8 +14,8 @@ pub struct UpdatePlayerLoginStateRequest {
     #[serde(with = "serde_bytes")]
     pub content_id_salt: [u8; 8],
     pub logged_in: bool,
-    pub territory_id: u16,
-    pub world_id: u16,
+    pub territory_id: u32,
+    pub world_id: u32,
 }
 
 pub async fn send_event_handler(

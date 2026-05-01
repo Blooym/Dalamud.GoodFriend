@@ -34,7 +34,7 @@ internal sealed class LoginStateModule : BaseModule
     /// <summary>
     ///     The current territory ID.
     /// </summary>
-    private ushort currentTerritoryId;
+    private uint currentTerritoryId;
 
     /// <summary>
     ///     The current free company ID.

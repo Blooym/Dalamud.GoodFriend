@@ -51,17 +51,6 @@ internal sealed class MainWindow : Window
         this.Flags = ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoCollapse;
         this.AllowPinning = false;
         this.AllowClickthrough = false;
-
-#if DEBUG
-        this.TitleBarButtons =
-        [
-            new() {
-                Icon = FontAwesomeIcon.Bug,
-                ShowTooltip = () => SiGui.Heading(Strings.UI_MainWindow_Button_Debug),
-                Click = (_) => this.CurrentScreen = MainWindowScreen.Debug,
-            },
-        ];
-#endif
     }
 
     /// <inheritdoc />
@@ -80,11 +69,6 @@ internal sealed class MainWindow : Window
                     case MainWindowScreen.Settings:
                         DrawSettings();
                         break;
-#if DEBUG
-                    case MainWindowScreen.Debug:
-                        DrawDebug();
-                        break;
-#endif
                 }
             }
         }
@@ -113,13 +97,6 @@ internal sealed class MainWindow : Window
             SettingsScreen.DrawSettingsList,
             SettingsScreen.DrawSettingDetails);
 
-#if DEBUG
-    private static void DrawDebug()
-        => PanelComponent.DrawSplitPanels("MainWindowPanel", ImGui.GetContentRegionAvail().X * SidebarWidthPercentage, ImGui.GetContentRegionAvail().X * ListWidthPercentage,
-            DebugScreen.DrawDebugList,
-            DebugScreen.DrawDebugDetails);
-#endif
-
     /// <summary>
     ///     The tabs of the main window.
     /// </summary>
@@ -134,12 +111,5 @@ internal sealed class MainWindow : Window
         ///     The settings tab.
         /// </summary>
         Settings,
-
-#if DEBUG
-        /// <summary>
-        ///     The debug tab.
-        /// </summary>
-        Debug,
-#endif
     }
 }

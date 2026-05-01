@@ -2,6 +2,7 @@ using System;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GoodFriend.Plugin.Base;
 using GoodFriend.Plugin.Configuration;
 using GoodFriend.Plugin.Localization;
@@ -92,7 +93,10 @@ internal static class SettingsScreen
             catch (UriFormatException)
             {
                 ToastHelper.ShowErrorToast(Strings.UI_MainWindow_SettingsScreen_Setting_APIURL_Invalid);
-                SoundEffectHelper.PlaySound(SoundEffect.Se11);
+                unsafe
+                {
+                    UIGlobals.PlaySoundEffect((uint)SoundEffect.Se11, default, default, default);
+                }
             }
         }
         ImGui.SameLine();

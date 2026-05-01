@@ -25,7 +25,7 @@ public sealed class PlayerLoginStateRequest : IHttpRequestHandler<PlayerLoginSta
         [Key(2)]
         public required bool LoggedIn { get; init; }
         [Key(3)]
-        public required ushort TerritoryId { get; init; }
+        public required uint TerritoryId { get; init; }
         [Key(4)]
         public required uint WorldId { get; init; }
     }
@@ -80,7 +80,7 @@ public sealed class PlayerLoginStateRequest : IHttpRequestHandler<PlayerLoginSta
         /// <summary>
         ///     The ID of the player's current Territory.
         /// </summary>
-        public required ushort TerritoryId { get; init; }
+        public required uint TerritoryId { get; init; }
 
         /// <summary>
         ///     The ID player's current World.

@@ -8,5 +8,4 @@
 .idea/
 *.DotSettings*
 
-# Misc
-**/TODO.md
+.direnv/

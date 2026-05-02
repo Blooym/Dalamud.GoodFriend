@@ -42,12 +42,10 @@ internal sealed class MainWindow : Window
     /// <inheritdoc />
     public MainWindow() : base(DalamudInjections.PluginInterface.Manifest.Name)
     {
-        this.Size = ImGuiHelpers.ScaledVector2(750, 550);
         this.SizeConstraints = new WindowSizeConstraints()
         {
-            MinimumSize = ImGuiHelpers.ScaledVector2(750, 550),
+            MinimumSize = new(850, 550),
         };
-        this.SizeCondition = ImGuiCond.FirstUseEver;
         this.Flags = ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoCollapse;
         this.AllowPinning = false;
         this.AllowClickthrough = false;

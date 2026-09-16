@@ -6,7 +6,6 @@
 
 A Dalamud plugin & associated web-API that provides improved in-game social functionality 
 
-[![Plugin Downloads](https://img.shields.io/endpoint?url=https://dalamud-dl-count.blooym.workers.dev/GoodFriend&label=Plugin%20Downloads)](https://github.com/Blooym/Dalamud.GoodFriend)
 [![Crowdin Localization](https://badges.crowdin.net/goodfriend/localized.svg)](https://crowdin.com/project/goodfriend)
 [![Licence](https://img.shields.io/github/license/Blooym/Dalamud.GoodFriend?color=blue&label=Licence)](https://github.com/Blooym/Dalamud.GoodFriend/blob/main/LICENSE)
 

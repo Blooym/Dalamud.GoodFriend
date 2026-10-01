@@ -4,24 +4,24 @@
     "net10.0": {
       "MessagePack": {
         "type": "Direct",
-        "requested": "[3.1.7, )",
-        "resolved": "3.1.7",
-        "contentHash": "gXpifaxbhfBqh8bVToQn9j+OgCnhXWMbRCV7RQIbCVa9CNJG1fY6oHAYYl+ER3Tb9uUIHiQ5QbGiGwwFhoagbA==",
+        "requested": "[3.1.10, )",
+        "resolved": "3.1.10",
+        "contentHash": "IvYiuLIGLbklU8qZFp0krv1f+0d0kkWbyb+I4Qmk8p5o+JxQsKUp2L5SBHV4vVmBh+DAj3bWDukGAl+87GMwrQ==",
         "dependencies": {
-          "MessagePack.Annotations": "3.1.7",
-          "MessagePackAnalyzer": "3.1.7",
+          "MessagePack.Annotations": "3.1.10",
+          "MessagePackAnalyzer": "3.1.10",
           "Microsoft.NET.StringTools": "17.11.4"
         }
       },
       "MessagePack.Annotations": {
         "type": "Transitive",
-        "resolved": "3.1.7",
-        "contentHash": "IW1yX9viarFl/Dsio5G+pM90JkOSW4xhAiJcKxPPF5rzyp2/yCpieWju8G99QLEmaQeze2uQMEskUBA59YZmkw=="
+        "resolved": "3.1.10",
+        "contentHash": "3XvSeRdiR9ujCcTuijFwn2DRO8+a2S4fkNvwMaMwnXvdUJRaWAVc37scCiFME0AYLXGtnWF+GHMZT/a+i5Vv7g=="
       },
       "MessagePackAnalyzer": {
         "type": "Transitive",
-        "resolved": "3.1.7",
-        "contentHash": "ZF+OOJTRS7Ogzb4gG36hPKVQk3kEbp6kkUcdRjhddDq/uSGcV4BKIdYiyJipExXyE/zsqYb0ic215O9kI+fjPA=="
+        "resolved": "3.1.10",
+        "contentHash": "t0sPByiRt2ipKUg64M1foAt5uDnJOiOGimE0rKXZ5CdiQw0Sf4TfELiWNjowcCHO0M6gRePrI90kXPc7rN2llw=="
       },
       "Microsoft.NET.StringTools": {
         "type": "Transitive",
